@@ -18,7 +18,7 @@ export default {
 
     if (icon) {
       vnodes.push(<svg-icon icon-class={icon}/>)
-      vnodes.push(<span class='text'>{(title)}</span>)
+      vnodes.push(<span class='text'>{title}</span>)
     }
 
     // if (title) {

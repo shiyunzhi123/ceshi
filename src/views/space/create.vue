@@ -2,7 +2,7 @@
   <div class="space-create">
     <div class="path">{{ pathName }}</div>
     <div class="continer">
-      <el-form label-width="130px" :model="form" size="small">
+      <el-form label-width="95px" :model="form" :rules="rules" ref="form" size="small">
         <el-form-item label="所在楼盘" prop="buildingName">
           {{ form.building.buildingName }}
           <!-- <el-select v-model="form.building.buildingName" filterable>
@@ -12,13 +12,44 @@
             <svg-icon icon-class="i" />请从已建的楼盘中选择。
           </div>-->
         </el-form-item>
-        <el-form-item label="房间号" prop="roomNumber">
-          <el-input v-model="form.roomGallery" style="width: 135px;" placeholder="楼座"></el-input>
-          <el-input v-model="form.roomLayer" style="width: 135px;" placeholder="楼层"></el-input>
-          <el-input v-model="form.roomNumber" style="width: 135px;" placeholder="房间号"></el-input>
-        </el-form-item>
+        <el-row>
+          <el-col :span="2.1">
+            <el-form-item label="房间号" prop="roomGallery" :inline="true" style="display:block">
+              <el-input
+                v-model="form.roomGallery"
+                style="width: 135px;"
+                placeholder="楼座"
+                @focus="showMessage"
+              ></el-input>
+              <p class="showMessage" v-if="this.show">请输入楼座(例:7栋)</p>
+            </el-form-item>
+          </el-col>
 
-        <el-form-item label="房屋用途">
+          <el-col :span="2.1" class="col1">
+            <el-form-item prop="roomLayer" :inline="true">
+              <el-input
+                :inline="true"
+                v-model="form.roomLayer"
+                style="width: 135px;"
+                placeholder="楼层"
+              ></el-input>
+              <p class="showMessage" v-if="this.show">请输入楼层(例:7层)</p>
+            </el-form-item>
+          </el-col>
+          <el-col :span="9" class="col1">
+            <el-form-item prop="roomNumber" :inline="true">
+              <el-input v-model="form.roomNumber" style="width: 135px;" placeholder="房间号"></el-input>
+              <p class="showMessage" v-if="this.show">请输入房间号(例:701室)</p>
+            </el-form-item>
+          </el-col>
+          <!-- <el-col :span="7" class="col2">
+            <span>{{form.roomGallery}}</span>
+            <span>{{form.roomLayer}}</span>
+            <span>{{form.roomNumber}}</span>
+          </el-col> -->
+        </el-row>
+
+        <el-form-item label="房屋用途" prop="roomPurpose">
           <el-checkbox-group v-model="form.roomPurpose" @change="handleBusinessType">
             <el-checkbox label="办公" value="办公" />
             <el-checkbox label="商业" value="商业" />
@@ -27,58 +58,95 @@
         </el-form-item>
         <el-collapse-transition>
           <el-form-item v-if="form.roomPurpose.length > 0" label="类型">
-            <el-select v-if="form.roomPurpose.includes('办公')" v-model="form.workstationType" style="width: 135px;">
-              <el-option label="办公室" value="办公室" />
-              <el-option label="开放工位" value="开放工位" />
-              <el-option label="移动工位" value="移动工位" />
-              <el-option label="独立空间" value="独立空间" />
-            </el-select>
-            <el-select v-if="form.roomPurpose.includes('商业')" v-model="form.businessType" style="width: 135px;">
-              <el-option label="商业临街店铺" value="商业临街店铺" />
-              <el-option label="社区底商" value="社区底商" />
-              <el-option label="购物百货中心" value="购物百货中心" />
-              <el-option label="写字楼配套" value="写字楼配套" />
-              <el-option label="临街门面" value="临街门面" />
-              <el-option label="档口摊位" value="档口摊位" />
-            </el-select>
+            <el-col :span="2.1">
+              <el-select
+                v-if="form.roomPurpose.includes('办公')"
+                v-model="form.workstationType"
+                style="width: 135px;"
+                @change="changeWork"
+              >
+                <el-option label="办公室" value="办公室" />
+                <el-option label="开放工位" value="开放工位" />
+                <el-option label="移动工位" value="移动工位" />
+                <el-option label="独立空间" value="独立空间" />
+              </el-select>
+            </el-col>
+            <el-col :span="2.5" class="busType">
+              <el-select
+                v-if="form.roomPurpose.includes('商业')"
+                v-model="form.businessType"
+                style="width: 135px;"
+              >
+                <el-option label="商业临街店铺" value="商业临街店铺" />
+                <el-option label="社区底商" value="社区底商" />
+                <el-option label="购物百货中心" value="购物百货中心" />
+                <el-option label="写字楼配套" value="写字楼配套" />
+                <el-option label="临街门面" value="临街门面" />
+                <el-option label="档口摊位" value="档口摊位" />
+              </el-select>
+            </el-col>
             <span v-if="form.workstationType === '办公室'">
-              <el-input v-model="form.roomArea" style="width: 135px;" placeholder />平方米
+              <el-col :span="7" class="busType">
+                <el-form-item prop="roomArea">
+                  <el-input v-model="form.roomArea" style="width: 135px;" placeholder />平方米
+                </el-form-item>
+              </el-col>
             </span>
-            <span v-if="form.workstationType === '独立空间'">
+            <span v-if="form.workstationType === '独立空间'" class="jian">
               <el-input v-model="form.personPerRoom" style="width: 135px;" placeholder />人/间
             </span>
           </el-form-item>
         </el-collapse-transition>
 
         <el-form-item label="是否可分割">
-          <el-radio-group v-model="form.separable">
-            <el-radio label="1">可分割</el-radio>
-          </el-radio-group>&nbsp;&nbsp;
-          <el-select
-            v-if="form.separable === '1'"
-            v-model="form.divisionType"
-            style="width: 135px;"
-          >
-            <el-option label="定向分割" value="定向分割" />
-            <el-option label="自由分割" value="自由分割" />
-          </el-select>
-          <span v-if="form.separable === '可分割' && form.divisionType === '自由分割'">
-            <el-input v-model="form.mixCutpart" style="width: 135px;" placeholder="最小分割面积" />
-            <span class="tip">平米起分</span>
+          <el-col :span="2">
+            <el-form-item>
+              <el-radio-group v-model="form.separable">
+                <el-radio label="1" :disabled="showChanges">可分割</el-radio>
+              </el-radio-group>
+&nbsp;&nbsp;
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="3" class="tip1">
+            <el-form-item>
+              <el-select
+                v-if="form.separable === '1' && form.workstationType==='办公室'"
+                v-model="form.divisionType"
+                style="width: 135px;"
+              >
+                <el-option label="定向分割" value="定向分割" />
+                <el-option label="自由分割" value="自由分割" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <span  v-if="form.separable === '1' && form.divisionType === '自由分割' ">
+            <el-col :span="3" class="tip1">
+              <el-form-item prop="mixCutpart">
+                <el-input v-model="form.mixCutpart" style="width: 110px;" placeholder="最小分割面积" />
+                <span class="tip">平米起分</span>
+              </el-form-item>
+            </el-col>
           </span>
           <span v-if="form.separable === '1' && form.divisionType === '定向分割'">
-            <el-input v-model="form.divisionDetail" style="width: 135px;" placeholder="分割面积" />
-            <span class="tip" v-if="form.separable">
-              <svg-icon icon-class="i" />分割面积，逗号隔开，如200，300，400
-            </span>
+            <el-col :span="9" class="tip1">
+              <el-form-item prop="divisionDetail">
+                <el-input v-model="form.divisionDetail" style="width: 175px;" placeholder="分割面积" />
+                <span class="tip" v-if="form.separable">
+                  <svg-icon icon-class="i" />分割面积，逗号隔开，如200，300，400
+                </span>
+              </el-form-item>
+            </el-col>
           </span>
         </el-form-item>
-
-        <el-form-item label>
+      
+      <el-col class="separable">
+        <el-form-item  prop="separable">
           <el-radio-group v-model="form.separable">
-            <el-radio label="0">不可分割</el-radio>
+            <el-radio label="0" :disabled="showChange">不可分割</el-radio>
           </el-radio-group>
         </el-form-item>
+      </el-col>
 
         <el-form-item label="出租时间">
           <el-radio-group v-model="form.leaseType">
@@ -95,7 +163,7 @@
         </el-form-item>
 
         <el-form-item label="装修">
-          <el-select v-model="form.renovationsss" style="width: 135px;">
+          <el-select v-model="form.renovation" style="width: 135px;">
             <el-option label="毛坯" value="毛坯"></el-option>
             <el-option label="简装" value="简装"></el-option>
             <el-option label="精装" value="精装"></el-option>
@@ -110,8 +178,8 @@
             <el-radio label="1">可注册</el-radio>
           </el-radio-group>
         </el-form-item>
-     
-        <el-form-item label="租金"  >
+
+        <el-form-item label="租金">
           <el-input v-model="form.rentValue" style="width: 135px;" placeholder></el-input>
           <el-select v-model="form.rentUnit" style="width: 135px; margin-right: 30px;">
             <el-option label="元/平方米·天" value="元/平方米·天"></el-option>
@@ -147,7 +215,7 @@
 
         <el-form-item class="btngroup">
           <el-button type="default" size="middle" @click="onCancle">取消</el-button>
-          <el-button type="primary" size="middle" @click="onSubmit">提交</el-button>
+          <el-button type="primary" size="middle" @click="onSubmit('form')">提交</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -165,6 +233,9 @@ export default {
   name: "SpaceCreate",
   data() {
     return {
+      showChange: false,
+      showChanges: false,
+      show: false,
       roomId: "",
       pathName: "",
       buildingList: [],
@@ -188,7 +259,7 @@ export default {
         divisionDetail: "",
         vacantTime: "",
         leaseType: "",
-        renovationsss: "",
+        renovation: "",
         registrable: "",
         rentValue: "",
         rentUnit: "",
@@ -197,13 +268,89 @@ export default {
         payValue: "",
         roomState: "",
         remarks: "",
-        workstationType:'',
+        workstationType: "",
         building: {
           buildingName: ""
         }
+      },
+      rules: {
+        // roomNumber: [
+        //   {
+        //     required: false, //是否必填
+        //     message: "请输入房间号(例:701室)", //规则
+        //     trigger: "blur" //何事件触发
+        //   }
+        // ],
+        // roomGallery: [
+        //   {
+        //     required: false, //是否必填
+        //     message: "请输入楼座号(例:18栋)", //规则
+        //     trigger: "blur" //何事件触发
+        //   }
+        //   //可以设置双重验证标准
+        // ],
+        // roomLayer: [
+        //   {
+        //     required: false, //是否必填
+        //     message: "请输入楼层(例:7层)", //规则
+        //     trigger: "blur" //何事件触发
+        //   }
+        //   //可以设置双重验证标准
+        // ],
+        roomPurpose: [
+          {
+            required: true, //是否必填
+            message: "请选择其中一个或者两个", //规则
+            trigger: "change" //何事件触发
+          }
+          //可以设置双重验证标准
+        ],
+        roomArea: [
+          {
+            required: true, //是否必填
+            message: "大于0小于99999,保留两位小数", //规则
+            trigger: "blur" //何事件触发
+          }
+          //可以设置双重验证标准
+        ],
+
+        separable: [
+          {
+            required: true, //是否必填
+            message: "请选择其中一个", //规则
+            trigger: "change" //何事件触发
+          }
+        ],
+        divisionDetail: [
+          {
+            required: true, //是否必填
+            // message: "请选择其中一个", //规则
+            trigger: "blur" //何事件触发,
+        
+          },
+          {
+            validator: this.checkSum,
+            trigger: "blur"
+          }
+        ],
+              mixCutpart: [
+          {
+            required: true, //是否必填
+            // message: "请选择其中一个", //规则
+            trigger: "blur" //何事件触发,
+        
+          },
+          {
+            validator: this.checkMix,
+         
+          }
+        ]
+
+
       }
     };
   },
+
   created() {
     this.roomId = this.$route.params.id;
     this.pathName = this.roomId ? "修改房源" : this.$route.meta.name;
@@ -223,6 +370,46 @@ export default {
     }
   },
   methods: {
+           checkSum(roomArea, value, callback,) {
+               console.log(this.form)
+              var value = value.split(",")
+
+              function sum(value) {
+               return eval(value.join("+"));
+               };
+
+               var value = sum(value)
+               var sum  = this.form.roomArea
+              if (
+                Number.isInteger(Number(value)) &&
+                Number(value) <= sum
+              ) {
+                callback();
+              } else {
+                callback(new Error(`请输的和小于等于总面积`));
+              }
+            },
+
+
+              checkMix(roomArea,value, callback,) {
+                var min = this.form.roomArea
+                console.log(min ,value)
+              if (
+                Number.isInteger(Number(value)) &&
+                Number(value) < min
+              ) {
+                callback();
+              } else {
+                callback(new Error('输入面积小于房源面积'));
+              }
+            },
+       
+     
+    showMessage() {
+      console.log("ddd");
+      this.show = true;
+      console.log(this.show);
+    },
     getBuildingList() {
       buildingList().then(res => {
         if (res.code === 200) {
@@ -231,8 +418,7 @@ export default {
       });
     },
     // 房源类型点击时
-    handleBusinessType() {
-    },
+    handleBusinessType() {},
     // 查询数据-编辑用
     getEditData() {
       const params = {
@@ -246,36 +432,52 @@ export default {
         }
       });
     },
-    onSubmit() {
-   
-      this.form.rentProperties = this.form.rentProperties.join(",");
-      this.form.roomPurpose = this.form.roomPurpose.join(","); 
-   
-      // delete this.form.building.buildingName
-      // delete this.form.building
-      if (this.roomId) {
-        console.log(this.form);
-        // 修改
-        roomResourcesUpdate(this.form).then(res => {
-          if (res.code === 200) {
-            this.$message.success("修改成功！");
-            this.$router.push({ name: "Space" });
-          }
-        });
-      } else {
-        console.log(this.form);
-        roomResourcesAdd(this.form).then(res => {
-          if (res.code === 200) {
-            this.$message.success("添加成功！");
-            this.$router.push({ name: "Space" });
-          }
-        });
-      }
+    changeWork(){
+         if(this.form.workstationType !== '办公室'){
+            this.form.separable = "0"
+            this.showChanges = true
+         }else if(this.form.workstationType === '办公室'){
+            this.showChanges = false
+         }
     },
+
+    onSubmit(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          this.form.rentProperties = this.form.rentProperties.join(",");
+          this.form.roomPurpose = this.form.roomPurpose.join(",");
+
+          // delete this.form.building.buildingName
+          // delete this.form.building
+          if (this.roomId) {
+            // 修改
+            roomResourcesUpdate(this.form).then(res => {
+              if (res.code === 200) {
+                this.$message.success("修改成功！");
+                this.$router.push({ name: "Space" });
+              }
+            });
+          } else {
+            console.log(this.form);
+            roomResourcesAdd(this.form).then(res => {
+              if (res.code === 200) {
+                this.$message.success("添加成功！");
+                this.$router.push({ name: "Space" });
+              }
+            });
+          }
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
+    },
+
     onCancle() {
       this.$router.push({ name: "Space" });
     }
-  }
+  },
+
 };
 </script>
 
@@ -309,7 +511,7 @@ export default {
   .tip {
     color: #868686;
     font-size: 12px;
-    display: inline-block;
+    // display: inline-block;
     margin: 0 2px;
     svg {
       margin-right: 2px;
@@ -326,6 +528,30 @@ export default {
     font-weight: normal;
     padding-right: 20px;
     color: #999;
+  }
+  .col1 {
+    margin-left: -90px;
+  }
+
+  .col2 {
+    margin-left: 10px;
+    margin-top: 10px;
+  }
+
+  .showMessage {
+    color: #868686;
+  }
+  .busType {
+    margin-left: 5px;
+  }
+  .tip1 {
+    margin-left: -70px;
+  }
+  .jian{
+    margin-left: 5px;
+  }
+  .separable{
+    margin-top: -30px;
   }
 }
 </style>

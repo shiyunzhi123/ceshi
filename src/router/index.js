@@ -23,7 +23,7 @@ export const constantRoutes = [
     path: '/',
     component: Layout,
     redirect: '/space',
-    meta: { title: '空间管理', icon: 'handle' },
+    meta: { title: '空间', icon: 'handle' },
     children: [{
       path: 'space',
       name: 'Space',
@@ -43,7 +43,7 @@ export const constantRoutes = [
     path: '/exercise',
     component: Layout,
     redirect: '/exercise',
-    meta: { title: '招商中心', name: '招商中心', icon: 'handle' },
+    meta: { title: '招商', name: '招商', icon: 'handle' },
     children: [
       {
         path: '',
@@ -85,6 +85,7 @@ export const constantRoutes = [
   {
     path: '/data',
     component: Layout,
+    meta: { title: '数据', name: '数据', icon: 'handle' },
     children: [
       {
         path: 'index',

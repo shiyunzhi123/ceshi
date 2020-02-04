@@ -113,7 +113,7 @@
               <template slot-scope="scope">
                 <img class="image-logo" :src="scope.row.company.logo | formatMap" />
                 <a class="table-row" @click="handleEdit(scope.row.roomId)">{{ scope.row.buildingName }} <svg-icon icon-class="edit" /></a><br />
-                {{ scope.row.roomGallery }}号楼{{ scope.row.roomLayer }}层{{ scope.row.roomNumber }}室
+                {{ scope.row.roomGallery }}{{ scope.row.roomLayer }}{{ scope.row.roomNumber }}
               </template>
             </el-table-column>
             <el-table-column
@@ -123,9 +123,27 @@
               alert="center"
             >
               <template slot-scope="scope">
-                <div>{{ scope.row.totleRentArea }}㎡</div>
-                <div>{{ scope.row.businessType }}</div>
+                <div  v-if="scope.row.workstationType==='办公室'">
+                   <div>{{ scope.row.roomArea}}㎡</div>
+                    <div>{{ scope.row.workstationType }}</div>
+                </div>
+               <div  v-if="scope.row.workstationType==='开放工位'">
+                <div>{{ scope.row.workstationType }}</div>
+               </div>
+
+               <div  v-if="scope.row.workstationType==='移动工位'">
+                <div>{{ scope.row.workstationType }}</div>
+               </div>
+
+                <div  v-if="scope.row.workstationType==='独立空间'">
+                <div>{{ scope.row.personPerRoom }}人间</div>
+
+                <div>{{ scope.row.workstationType }}</div>
+               </div>
+           
               </template>
+
+
             </el-table-column>
             <el-table-column
               prop="endTime"
@@ -335,7 +353,9 @@ export default {
     },
     // 子组件互动值
     handleFunSpace(e) {
+      console.log(e)
       this.spaceId = e
+      console.log(this.spaceId)
       this.getMainSpace()
     },
     // 获取空间详细信息
