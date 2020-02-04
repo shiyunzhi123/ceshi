@@ -178,6 +178,7 @@
             <el-radio label="1">可注册</el-radio>
           </el-radio-group>
         </el-form-item>
+        <el-row>
       <el-col :span="2">
         <el-form-item label="租金">
           <el-input v-model="form.rentValue" style="width: 135px;" placeholder></el-input>
@@ -194,15 +195,15 @@
             </el-form-item>
           </el-col>
       
-     
-        <el-form-item>
-            <el-checkbox-group v-model="form.rentProperties ">
+      
+            <el-col :span="2">
+            <el-checkbox-group v-model="form.rentProperties" class="checkBox">
             <el-checkbox label="含税">含税</el-checkbox>
             <el-checkbox label="含物业">含物业</el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-
-
+            </el-checkbox-group>
+             </el-col>
+ 
+ </el-row>
         <el-form-item label="付款方式">
           <span class="tip">押</span>
           <el-input v-model="form.payPledge" style="width: 135px;" placeholder></el-input>
@@ -566,6 +567,11 @@ export default {
   }
   .box{
     margin-left: 25px;
+  }
+  .checkBox{
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
   }
 }
 </style>
