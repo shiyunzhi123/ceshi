@@ -123,7 +123,7 @@
           <span  v-if="form.separable === '1' && form.divisionType === '自由分割' ">
             <el-col :span="3" class="tip1">
               <el-form-item prop="mixCutpart">
-                <el-input v-model="form.mixCutpart" style="width: 110px;" placeholder="最小分割面积" />
+                <el-input v-model="form.mixCutpart" style="width: 105px;" placeholder="分割面积" />
                 <span class="tip">平米起分</span>
               </el-form-item>
             </el-col>
@@ -178,21 +178,30 @@
             <el-radio label="1">可注册</el-radio>
           </el-radio-group>
         </el-form-item>
-
+      <el-col :span="2">
         <el-form-item label="租金">
           <el-input v-model="form.rentValue" style="width: 135px;" placeholder></el-input>
+            </el-form-item>
+     </el-col>
+          <el-col :span="3.1" class="box">
+            <el-form-item>
           <el-select v-model="form.rentUnit" style="width: 135px; margin-right: 30px;">
             <el-option label="元/平方米·天" value="元/平方米·天"></el-option>
             <el-option label="元/平方米·月" value="元/平方米·月"></el-option>
             <el-option label="元/工位·月" value="元/工位·月"></el-option>
             <el-option label="元/间·月" value="元/间·月"></el-option>
           </el-select>
-
-          <el-checkbox-group v-model="form.rentProperties ">
+            </el-form-item>
+          </el-col>
+      
+     
+        <el-form-item>
+            <el-checkbox-group v-model="form.rentProperties ">
             <el-checkbox label="含税">含税</el-checkbox>
             <el-checkbox label="含物业">含物业</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
+
 
         <el-form-item label="付款方式">
           <span class="tip">押</span>
@@ -386,7 +395,7 @@ export default {
               ) {
                 callback();
               } else {
-                callback(new Error(`请输的和小于等于总面积`));
+                callback(new Error(`小于等于总面积`));
               }
             },
 
@@ -400,7 +409,7 @@ export default {
               ) {
                 callback();
               } else {
-                callback(new Error('输入面积小于房源面积'));
+                callback(new Error('小于房源面积'));
               }
             },
        
@@ -540,18 +549,23 @@ export default {
 
   .showMessage {
     color: #868686;
+    font-size: 12px;
+    margin-top: -5px;
   }
   .busType {
     margin-left: 5px;
   }
   .tip1 {
-    margin-left: -70px;
+    margin-left: -20px;
   }
   .jian{
     margin-left: 5px;
   }
   .separable{
     margin-top: -30px;
+  }
+  .box{
+    margin-left: 25px;
   }
 }
 </style>
