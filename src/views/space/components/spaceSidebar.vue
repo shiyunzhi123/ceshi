@@ -115,24 +115,22 @@ export default {
     handleClick(row) {
       this.spaceSelect = row.spaceId
       console.log( this.spaceSelect)
-      console.log("ddd")
       this.funSpace(row.spaceId)
       sessionStorage.setItem('space', JSON.stringify(row))
-      // this.spaceSelect === JSON.parse (sessionStorage.getItem("space",'spaceId'))
+      this.spaceSelect === JSON.parse (sessionStorage.getItem("space",'spaceId'))
     },
     // 查找我的空间
     getMySpaces() {
       findMySpaces().then(res => {
         if (res.code === 200) {
-          this.spaceList = res.data
+          console.log(res) 
+         this.spaceList = res.data
           this.spaceSelect = JSON.parse(sessionStorage.getItem('space',)).spaceId
          
           this.funSpace(this.spaceSelect)
-          // this.spaceSelect = JSON.parse(sessionStorage.getItem('space',)).spaceId
- 
+         
         }
       })
-
     },
     // 新增空间弹窗
     dialogCreateSpaceShow() {

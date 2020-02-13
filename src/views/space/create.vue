@@ -46,7 +46,7 @@
             <span>{{form.roomGallery}}</span>
             <span>{{form.roomLayer}}</span>
             <span>{{form.roomNumber}}</span>
-          </el-col> -->
+          </el-col>-->
         </el-row>
 
         <el-form-item label="房屋用途" prop="roomPurpose">
@@ -103,8 +103,7 @@
             <el-form-item>
               <el-radio-group v-model="form.separable">
                 <el-radio label="1" :disabled="showChanges">可分割</el-radio>
-              </el-radio-group>
-&nbsp;&nbsp;
+              </el-radio-group>&nbsp;&nbsp;
             </el-form-item>
           </el-col>
 
@@ -120,10 +119,10 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <span  v-if="form.separable === '1' && form.divisionType === '自由分割' ">
+          <span v-if="form.separable === '1' && form.divisionType === '自由分割' ">
             <el-col :span="3" class="tip1">
               <el-form-item prop="mixCutpart">
-                <el-input v-model="form.mixCutpart" style="width: 105px;" placeholder="分割面积" />
+                <el-input v-model="form.mixCutpart" style="width: 110px;" placeholder="最小分割面积" />
                 <span class="tip">平米起分</span>
               </el-form-item>
             </el-col>
@@ -139,14 +138,14 @@
             </el-col>
           </span>
         </el-form-item>
-      
-      <el-col class="separable">
-        <el-form-item  prop="separable">
-          <el-radio-group v-model="form.separable">
-            <el-radio label="0" :disabled="showChange">不可分割</el-radio>
-          </el-radio-group>
-        </el-form-item>
-      </el-col>
+
+        <el-col class="separable">
+          <el-form-item prop="separable">
+            <el-radio-group v-model="form.separable">
+              <el-radio label="0" :disabled="showChange">不可分割</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-col>
 
         <el-form-item label="出租时间">
           <el-radio-group v-model="form.leaseType">
@@ -178,32 +177,43 @@
             <el-radio label="1">可注册</el-radio>
           </el-radio-group>
         </el-form-item>
+
         <el-row>
-      <el-col :span="2">
-        <el-form-item label="租金">
-          <el-input v-model="form.rentValue" style="width: 135px;" placeholder></el-input>
-            </el-form-item>
-     </el-col>
-          <el-col :span="3.1" class="box">
-            <el-form-item>
-          <el-select v-model="form.rentUnit" style="width: 135px; margin-right: 30px;">
-            <el-option label="元/平方米·天" value="元/平方米·天"></el-option>
-            <el-option label="元/平方米·月" value="元/平方米·月"></el-option>
-            <el-option label="元/工位·月" value="元/工位·月"></el-option>
-            <el-option label="元/间·月" value="元/间·月"></el-option>
-          </el-select>
+          <el-col :span="2">
+            <el-form-item label="租金">
+              <el-input v-model="form.rentValue" style="width: 135px;" placeholder></el-input>
             </el-form-item>
           </el-col>
-      
-      
-            <el-col :span="2">
+          <el-col :span="3.1" class="box">
+            <el-form-item>
+              <el-select v-model="form.rentUnit" style="width: 135px; margin-right: 30px;" v-if="this.form.workstationType ==='办公室'">
+                <el-option label="元/平方米·天" value="元/平方米·天"></el-option>
+                <el-option label="元/平方米·月" value="元/平方米·月"></el-option>
+              </el-select>
+              
+
+              <el-select v-model="form.rentUnit" style="width: 135px; margin-right: 30px;" v-if="this.form.workstationType ==='移动工位'">
+                <el-option label="元/工位·月" value="元/工位·月"></el-option>
+              </el-select>
+
+                 <el-select v-model="form.rentUnit" style="width: 135px; margin-right: 30px;" v-if="this.form.workstationType ==='开放工位'">
+                <el-option label="元/工位·月" value="元/工位·月"></el-option>
+              </el-select>
+
+              <el-select v-model="form.rentUnit" style="width: 135px; margin-right: 30px;" v-if="this.form.workstationType ==='独立空间'" >
+                <el-option label="元/间·月" value="元/间·月"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="2">
             <el-checkbox-group v-model="form.rentProperties" class="checkBox">
-            <el-checkbox label="含税">含税</el-checkbox>
-            <el-checkbox label="含物业">含物业</el-checkbox>
+              <el-checkbox label="含税">含税</el-checkbox>
+              <el-checkbox label="含物业">含物业</el-checkbox>
             </el-checkbox-group>
-             </el-col>
- 
- </el-row>
+          </el-col>
+        </el-row>
+
         <el-form-item label="付款方式">
           <span class="tip">押</span>
           <el-input v-model="form.payPledge" style="width: 135px;" placeholder></el-input>
@@ -217,6 +227,29 @@
             <el-radio label="1">招商中</el-radio>
             <el-radio label="0">下架中</el-radio>
           </el-radio-group>
+        </el-form-item>
+        <el-form-item label="上传图片">
+          <el-upload
+            v-model="form.images"
+            action="http://39.107.15.114:8080/upload/roomImage"
+            list-type="picture-card"
+            accept="image/*"
+            :headers="headers"
+            :limit="imgLimit"
+            :file-list="fileList"
+            :multiple="isMultiple"
+            :on-preview="handlePictureCardPreview"
+            :on-remove="handleRemove"
+            :on-success="handleAvatarSuccess"
+            :before-upload="beforeAvatarUpload"
+            :on-exceed="handleExceed"
+            :on-error="imgUploadError"
+          >
+            <i class="el-icon-plus"></i>
+          </el-upload>
+          <el-dialog :visible.sync="dialogVisible">
+            <img width="80%" height="10%" :src="dialogImageUrl" alt />
+          </el-dialog>
         </el-form-item>
 
         <el-form-item label="备注">
@@ -237,12 +270,22 @@ import { buildingList } from "@/api/building";
 import {
   roomResourcesAdd,
   roomResourcesDetail,
-  roomResourcesUpdate
+  roomResourcesUpdate,
+  UploadRoomImage,
+  spaceAffixDelete
 } from "@/api/roomResources";
 export default {
   name: "SpaceCreate",
   data() {
     return {
+      dialogVisible: false,
+      dialogImageUrl: "",
+      fileList: [],
+      isMultiple: true,
+      imgLimit: 6,
+      headers: {
+        Authorization: ""
+      },
       showChange: false,
       showChanges: false,
       show: false,
@@ -279,6 +322,7 @@ export default {
         roomState: "",
         remarks: "",
         workstationType: "",
+        images: "",
         building: {
           buildingName: ""
         }
@@ -336,27 +380,22 @@ export default {
             required: true, //是否必填
             // message: "请选择其中一个", //规则
             trigger: "blur" //何事件触发,
-        
           },
           {
             validator: this.checkSum,
             trigger: "blur"
           }
         ],
-              mixCutpart: [
+        mixCutpart: [
           {
             required: true, //是否必填
             // message: "请选择其中一个", //规则
             trigger: "blur" //何事件触发,
-        
           },
           {
-            validator: this.checkMix,
-         
+            validator: this.checkMix
           }
         ]
-
-
       }
     };
   },
@@ -372,49 +411,98 @@ export default {
     if (this.roomId) {
       this.getEditData();
     }
+
     // this.getBuildingList()
     let p = sessionStorage.getItem("space");
     if (p) {
       p = JSON.parse(p);
       this.form.building.buildingName = p.buildingName;
     }
+    this.checkCookie("Authorization");
   },
   methods: {
-           checkSum(roomArea, value, callback,) {
-               console.log(this.form)
-              var value = value.split(",")
+    handleRemove(file, fileList) {
+      //移除图片
+      console.log(file)
+       const affixId = file.affixId;
 
-              function sum(value) {
-               return eval(value.join("+"));
-               };
-
-               var value = sum(value)
-               var sum  = this.form.roomArea
-              if (
-                Number.isInteger(Number(value)) &&
-                Number(value) <= sum
-              ) {
-                callback();
-              } else {
-                callback(new Error(`小于等于总面积`));
-              }
-            },
+      spaceAffixDelete(affixId).then(res => {
+        if (res.code === 200) {
+          this.$message.success("删除成功！");
+          this.getMainSpace();
+        }
+      });
 
 
-              checkMix(roomArea,value, callback,) {
-                var min = this.form.roomArea
-                console.log(min ,value)
-              if (
-                Number.isInteger(Number(value)) &&
-                Number(value) < min
-              ) {
-                callback();
-              } else {
-                callback(new Error('小于房源面积'));
-              }
-            },
-       
-     
+    },
+    handlePictureCardPreview(file, res) {
+      //预览图片时调用
+      console.log(file);
+
+      this.dialogImageUrl = file.response.data.src;
+      this.dialogVisible = true;
+    },
+
+    beforeAvatarUpload(file, res) {
+      //文件上传之前调用做一些拦截限制
+      console.log(file);
+      const isJPG = true;
+      // const isJPG = file.type === 'image/jpeg';
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      // if (!isJPG) {
+      //   this.$message.error('上传头像图片只能是 JPG 格式!');
+      // }
+      if (!isLt2M) {
+        this.$message.error("上传图片大小不能超过 2MB!");
+      }
+      return isJPG && isLt2M;
+    },
+    handleAvatarSuccess(res, file, fileList) {
+      //图片上传成功
+      console.log(res);
+      this.form.images += res.data.affixId + ",";
+      console.log(this.form.images);
+      this.imageUrl = URL.createObjectURL(file.raw);
+    },
+    handleExceed(files, fileList) {
+      //图片上传超过数量限制
+      this.$message.error("上传图片不能超过6张!");
+      console.log(file, fileList);
+    },
+    imgUploadError(err, file, fileList) {
+      //图片上传失败调用
+      console.log(err);
+      this.$message.error("上传图片失败!");
+    },
+
+    checkSum(roomArea, value, callback) {
+      console.log(this.form);
+      var value = value.split(",");
+
+      function sum(value) {
+        return eval(value.join("+"));
+      }
+
+      var value = sum(value);
+      var sum = this.form.roomArea;
+      if (Number.isInteger(Number(value)) && Number(value) <= sum) {
+        callback();
+      } else {
+        callback(new Error(`请输的和小于等于总面积`));
+      }
+    },
+
+    checkMix(roomArea, value, callback) {
+      var min = this.form.roomArea;
+      console.log(min, value);
+      if (Number.isInteger(Number(value)) && Number(value) < min) {
+        callback();
+      } else {
+        callback(new Error("输入面积小于房源面积"));
+      }
+    },
+
     showMessage() {
       console.log("ddd");
       this.show = true;
@@ -434,21 +522,31 @@ export default {
       const params = {
         roomId: this.roomId
       };
+
       roomResourcesDetail(params).then(res => {
         if (res.code === 200) {
+          console.log(res);
           this.form = { ...res.data };
+          console.log(this.form);
           this.form.rentProperties = this.form.rentProperties.split(",");
           this.form.roomPurpose = this.form.roomPurpose.split(",");
+          this.fileList = res.data.imagesList;
+
+          // console.log(this.fileList[0].url);
+          // console.log(this.fileList)
         }
       });
     },
-    changeWork(){
-         if(this.form.workstationType !== '办公室'){
-            this.form.separable = "0"
-            this.showChanges = true
-         }else if(this.form.workstationType === '办公室'){
-            this.showChanges = false
-         }
+    changeWork() {
+      if (this.form.workstationType === "独立空间") {
+        this.form.separable = "0";
+        this.showChanges = true;
+
+     
+      } else if (this.form.workstationType === "办公室") {
+        this.showChanges = false;
+       
+      } 
     },
 
     onSubmit(formName) {
@@ -460,6 +558,8 @@ export default {
           // delete this.form.building.buildingName
           // delete this.form.building
           if (this.roomId) {
+            this.form.imagesList = [];
+            console.log(this.form);
             // 修改
             roomResourcesUpdate(this.form).then(res => {
               if (res.code === 200) {
@@ -485,9 +585,23 @@ export default {
 
     onCancle() {
       this.$router.push({ name: "Space" });
-    }
-  },
+    },
 
+    checkCookie: function(Authorization) {
+      {
+        var aCookie = document.cookie.split("; ");
+
+        for (var i = 0; i < aCookie.length; i++) {
+          var aCrumb = aCookie[i].split("=");
+
+          if (Authorization == aCrumb[0]) {
+            this.headers.Authorization = unescape(aCrumb[1]);
+          }
+        }
+        return null;
+      }
+    }
+  }
 };
 </script>
 
@@ -550,28 +664,26 @@ export default {
 
   .showMessage {
     color: #868686;
-    font-size: 12px;
-    margin-top: -5px;
   }
   .busType {
     margin-left: 5px;
   }
   .tip1 {
-    margin-left: -20px;
+    margin-left: -70px;
   }
-  .jian{
+  .jian {
     margin-left: 5px;
   }
-  .separable{
+  .separable {
     margin-top: -30px;
   }
-  .box{
-    margin-left: 25px;
-  }
-  .checkBox{
-    display: flex;
-    align-items: center;
-    margin-top: 10px;
-  }
+}
+.box {
+  margin-left: 25px;
+}
+.checkBox {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
 }
 </style>

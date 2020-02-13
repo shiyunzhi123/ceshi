@@ -40,3 +40,73 @@ export function mainspace(data) {
     params: data
   })
 }
+
+//修改资料
+
+export function spaceUpdate(data) {
+  const params = qs.stringify(data)
+  console.log(params)
+  return requestCustom({
+    url: `/space/update`,
+    method: 'post',
+    params: data
+  })
+}
+
+export function spaceMyspace(data) {
+  const params = qs.stringify(data)
+  console.log(params)
+  return requestCustom({
+    url: `/space/myspace`,
+    method: 'get',
+    params: data
+  })
+}
+
+//删除文件
+export function spaceAffixDelete(data) {
+  console.log(data)
+  return requestCustom({
+    url: `/affix/delete/${data}`,
+    method: 'get',
+    // params: data
+  })
+}
+
+//获取图片List
+export function  spaceImagesList(data) {
+  const params = qs.stringify(data)
+  console.log(params)
+  return requestCustom({
+    url: `/space/imageslist`,
+    method: 'get',
+    params: data
+  })
+}
+
+//设置封面
+
+export function  spaceSetSurfaceImages(data) {
+  const params = qs.stringify(data)
+  console.log(params)
+  return requestCustom({
+    url: `/space/setSurfaceImages`,
+    method: 'get',
+    params: data
+  })
+}
+
+//删除空间图片
+
+export function  spaceDeleteImages(data) {
+  const params = qs.stringify(data)
+  console.log(params)
+  return requestCustom({
+    url: `/space/deleteImages`,
+    method: 'post',
+    params: data
+  })
+}
+
+
+

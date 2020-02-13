@@ -25,3 +25,14 @@ export function activityDetail(data) {
     params: data
   })
 }
+
+
+// 图片
+export function UploadRoomImage(data) {
+  return requestCustom({
+    url: `/upload/roomImage`,
+    method: 'post',
+    params: data
+  })
+}
+

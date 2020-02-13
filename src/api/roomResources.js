@@ -68,3 +68,23 @@ export function roomResourcesDetail(data) {
     params: data
   })
 }
+
+
+// export function UploadRoomImage(data) {
+//   return requestCustom({
+//     url: `/upload/roomImage`,
+//     method: 'post',
+//     params: data
+//   })
+// }
+
+
+//删除文件
+export function spaceAffixDelete(data) {
+  console.log(data)
+  return requestCustom({
+    url: `/affix/delete/${data}`,
+    method: 'get',
+    // params: data
+  })
+}
