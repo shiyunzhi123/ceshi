@@ -20,11 +20,18 @@
 
       <h3 class="title">招商负责人</h3>
       <div class="head-block">
-        <a class="head" v-for="(item, i) in teamLeader" :key="item.id">
+        <!-- <a class="head" v-for="(item) in teamLeader" :key="item.id">
           <img :src="item.avatar" />
           <span :data-id="item.userId" class="del" @click="handleDelTeamLeader(item)">x</span>
-        </a>
-        <a class="head-add">+</a>
+        </a> -->
+
+         <span
+          class="head"
+          v-for="(item, i) in team"
+          :key="item.id"
+          :class="'bg'+(i+1)"
+        >{{ item.username | formatFirstKey }}</span>
+        <a class="head-add" @click="handleSetCompanyTeam">+</a>
       </div>
 
       <h3 class="title">招商团队</h3>
@@ -35,7 +42,7 @@
           :key="item.id"
           :class="'bg'+(i+1)"
         >{{ item.username | formatFirstKey }}</span>
-        <!-- <a class="head-add" @click="handleSetCompanyTeam">+</a> -->
+        <a class="head-add" @click="handleSetCompanyTeam">+</a>
       </div>
 
       <h3 class="title">日历</h3>
@@ -69,7 +76,7 @@
         <ul class="item-block">
           <li class="item purple">
             <span class="tit">在租面积</span>
-            <span class="con">{{ spaceInfo.manageArea * spaceInfo.totleRentNumber }}m²</span>
+            <span class="con">{{ spaceInfo.manageArea }}m²</span>
           </li>
           <li class="item indigo">
             <span class="tit">管理面积</span>
@@ -121,7 +128,7 @@
                   <svg-icon icon-class="remove" />删除
                 </li>
               </ul>
-              <a class="txt">核销时间：{{ spaceInfo.company.modifyTime }}</a>
+              <a class="txt">核销时间：{{ spaceInfo.company.createTime }}</a>
               <el-button
                 size="small"
                 type="primary"
@@ -149,7 +156,7 @@
 
                     <div style="margin-left:15px">
                       <a class="table-row" @click="handleEdit(scope.row.roomId)">
-                        {{ scope.row.buildingName }}
+                        {{ scope.row.building.buildingName }}
                         <svg-icon icon-class="edit" />
                       </a>
                       <div>{{ scope.row.roomGallery }}{{ scope.row.roomLayer }}{{ scope.row.roomNumber }}</div>
@@ -165,6 +172,7 @@
                   </div>
                   <div v-if="scope.row.workstationType==='开放工位'">
                     <div>{{ scope.row.workstationType }}</div>
+                    <div>{{ scope.row.workstation_number }}</div>
                   </div>
 
                   <div v-if="scope.row.workstationType==='移动工位'">
@@ -186,26 +194,45 @@
               </el-table-column>
 
               <el-table-column label="出租时间" width="110">
-                <template slot-scope="scope">{{ scope.row.salesTime | formatTime }}</template>
+                <template slot-scope="scope" >
+
+               
+                 <div v-if="scope.row.leaseType ==='现房出租' ">
+                    <div>{{  scope.row.leaseType }}</div>
+                  </div>
+
+                      <div v-if="scope.row.leaseType ==='预约出租' ">
+                    <div>{{  scope.row.vacantTime }}</div>
+                  </div>
+                  
+                  
+                  </template>
               </el-table-column>
               <el-table-column prop="roomState" label="房源状态" width="120">
                 <template slot-scope="scope">
                   <el-button
-                    :type="scope.row.leftNumber * 1 ? 'success' : 'info'"
+                    :type="scope.row.roomState * 1 ? 'success' : 'info'"
                     plain
                     size="mini"
                     round
                     @click="handleChangeStatus(scope.row)"
-                  >{{ scope.row.leftNumber * 1 ? '招商中' : '已下架' }}</el-button>
+                  >{{ scope.row.roomState * 1 ? '招商中' : '已下架' }}</el-button>
                 </template>
               </el-table-column>
               <el-table-column prop="endTime" label="佣金活动" width="120">
                 <template slot-scope="scope">
-                  <div v-for="item in scope.row.activityList">{{ item }}</div>
+                  <div v-for="item in scope.row.activityList" :key="item">{{ item }}</div>
                 </template>
               </el-table-column>
               <el-table-column prop="registrable" label="装修/注册" width="100">
-                <template slot-scope="scope">{{ scope.row.roomState === '1' ? '可注册' : '不可注册' }}</template>
+             
+                <template slot-scope="scope">
+                  <div>{{scope.row.renovation}}</div>
+                  <div>
+                     {{ scope.row.registrable === '1' ? '可注册' : '不可注册' }}
+                  </div>
+                 
+                </template>
               </el-table-column>
             </el-table>
             <div style="text-align: center; padding: 20px;">
@@ -246,7 +273,7 @@
               :before-close="handleDialogStatusClose"
             >
               <div style="text-align: center;">
-                <el-select v-model="dialogStatusForm.leftNumber" placeholder="请选择">
+                <el-select v-model="dialogStatusForm.roomState" placeholder="请选择">
                   <el-option value="1" label="招商中" name="招商中" />
                   <el-option value="0" label="已下架" name="已下架" />
                 </el-select>
@@ -267,9 +294,9 @@
                 </div>
               </h2>
               <div class="briefIntroduction">
-                <p id="showAll" :class="{ellpes:!showAll}">{{this.space.introduction}}</p>
-
-                <a @click="fun_showAll" href="javascript:void(0)">[{{showAll?"收起":"展开"}}]</a>
+                <p id="showAll" :class="{ellpes:!showAll}"  style="text-indent:2rem; white-space: pre-wrap"> {{this.space.introduction}}</p>
+               
+                <a @click="fun_showAll" v-show="tetxShow" href="javascript:void(0)">[{{showAll?"收起":"展开"}}]</a>
               </div>
             </div>
 
@@ -316,7 +343,7 @@
                   :on-success="handleVideoFileSuccess"
                   :on-remove="handleVideoRemove"
                   :before-remove="beforeVideoRemove"
-                  multiple
+                   multiple
                   :headers="headers"
                   :limit="3"
                   :on-exceed="handleExceed"
@@ -418,7 +445,7 @@
                   <el-button type="primary" size="mini" @click="handleAroundSet">编辑</el-button>
                 </div>
               </h2>
-              <div class="briefIntroduction">{{this.space.aroundSet}}</div>
+              <div class="briefIntroduction" style="text-indent:2rem; white-space: pre-wrap">{{this.space.aroundSet}}</div>
               <el-tag
                 :key="tag"
                 v-for="tag in dynamicTags"
@@ -429,13 +456,13 @@
               <el-input
                 class="input-new-tag"
                 v-if="inputVisible"
-                v-model="space.aroundSetTag"
+                v-model="inputValue"
                 ref="saveTagInput"
                 size="small"
                 @keyup.enter.native="handleInputConfirm"
                 @blur="handleInputConfirm"
               ></el-input>
-              <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
+              <el-button v-else class="button-new-tag" size="small" @click="showInput">+ 新标签</el-button>
             </div>
 
             <div class="materialBox">
@@ -453,10 +480,10 @@
                   <div class="addressList fl">
                     <p>
                       <em class="icon em1"></em>
-                      <i>[朝阳-望京]</i>朝阳区三间房乡双桥路64号
+                      <i>[{{this.district}}-{{this.businessDistrict}}]</i>{{this.space.addressDetail}}
                     </p>
                     <p>
-                      <em class="icon em2"></em>距离 八通线双桥1664米
+                      <em class="icon em2"></em>距离 {{this.subways}}
                     </p>
                   </div>
                 </div>
@@ -519,19 +546,19 @@
             </el-dialog>
 
             <el-dialog title="位置编辑" :visible.sync="mapChange" width="360px">
-              <div style="text-align: center;">
-                <el-form size="mini" label-width="80px">
-                  <el-form-item label="项目类型">
-                    <el-select style="width:200px;" v-model="space.projectType" placeholder="请选择">
-                      <el-option label="写字楼" value="写字楼"></el-option>
-                      <el-option label="产业园" value="产业园"></el-option>
-                    </el-select>
+              <div >
+                <el-form size="mini" label-width="40px">
+                  <el-form-item label="地址">
+                    <el-input style="width:100px;" :disabled="true" v-model="district"></el-input>
+                    <el-input style="width:100px;" :disabled="true" v-model="businessDistrict"></el-input>
+                    
                   </el-form-item>
+             
 
-                  <el-form-item label="占地面积">
-                    <el-input style="width:200px;" v-model="space.floorSpace"></el-input>
+                 <el-form-item label="">
+                    <el-input style="width:250px;"  v-model="space.addressDetail"></el-input>
                   </el-form-item>
-                </el-form>
+                   </el-form>
               </div>
               <span slot="footer" class="dialog-footer">
                 <el-button @click="mapChange = false">取 消</el-button>
@@ -542,7 +569,7 @@
             <el-dialog
               title="房源图片"
               :visible.sync="ChangePic"
-              width="560px"
+              width="700px"
               heigth="800px"
               v-dialogDrag:{dialogDrag}="dialogDrag"
             >
@@ -755,7 +782,7 @@
 
             <el-dialog title="编辑" :visible.sync="changeEditor" width="500px" :modal="false">
               <div style="text-align: center;">
-                <el-input type="textarea" v-model="space.introduction"></el-input>
+                <el-input type="textarea" v-model="space.introduction"  :rows="6" ></el-input>
               </div>
               <span slot="footer" class="dialog-footer">
                 <el-button @click="changeEditor = false">取 消</el-button>
@@ -765,7 +792,7 @@
 
             <el-dialog title="编辑" :visible.sync="changeAround" width="500px" :modal="false">
               <div style="text-align: center;">
-                <el-input type="textarea" v-model="space.aroundSet"></el-input>
+                <el-input type="textarea" v-model="space.aroundSet" :rows="6"></el-input>
               </div>
               <span slot="footer" class="dialog-footer">
                 <el-button @click="changeAround = false">取 消</el-button>
@@ -790,7 +817,8 @@ import {
   spaceAffixDelete,
   spaceImagesList,
   spaceSetSurfaceImages,
-  spaceDeleteImages
+  spaceDeleteImages,
+  spaceSaleTime
 } from "@/api/space";
 import {
   roomResources,
@@ -840,6 +868,11 @@ export default {
       headers: {
         Authorization: ""
       },
+      tetxShow:"",
+      subways:"",
+      brandName:"",
+      businessDistrict:"",
+      district:"",
       effectImagesList: [],
       floorImagesList: [],
       indoorImagesList: [],
@@ -878,6 +911,7 @@ export default {
       changeAround: false,
       uploadImgChange: false,
       mapChange: false,
+      inputValue:"",
       space: {
         spaceId: "",
         introduction: "",
@@ -897,7 +931,8 @@ export default {
         indoorImages: "",
         floorImages: "",
         supportingImages: "",
-        effectImages: ""
+        effectImages: "",
+        addressDetail:""
       },
       spaceInfo: {
         buildingId: "",
@@ -957,7 +992,7 @@ export default {
       dialogStatus: false,
       dialogStatusForm: {
         roomId: "",
-        leftNumber: ""
+        roomState: ""
       }
     };
   },
@@ -985,13 +1020,6 @@ export default {
       this.uploadImgChange = false;
       spaceImagesList(this.form).then(res => {
         if (res.code === 200) {
-          console.log(res);
-          this.imageslist = res.data.imageslist;
-          this.locationImagesList = res.data.locationImagesList;
-          this.effectImagesList = res.data.effectImagesList;
-          this.floorImagesList = res.data.floorImagesList;
-          this.indoorImagesList = res.data.indoorImagesList;
-          this.supportingImagesList = res.data.supportingImagesList;
         }
       });
     },
@@ -999,11 +1027,11 @@ export default {
     handleChangePic() {
       this.ChangePic = true;
 
-      console.log(this.form);
+    
       //获取图片
       spaceImagesList(this.form).then(res => {
         if (res.code === 200) {
-          console.log(res);
+       
           this.imageslist = res.data.imageslist;
           this.locationImagesList = res.data.locationImagesList;
           this.effectImagesList = res.data.effectImagesList;
@@ -1017,21 +1045,26 @@ export default {
     //文件的上传
 
     handleFileSuccess(res, file, fileList) {
-      //图片上传成功
-      console.log(res);
-      // this.form.images += res.data.src + ",";
-      // console.log(this.form.images)
-      // this.imageUrl = URL.createObjectURL(file.raw);
+
+         this.getMainSpace()
+    
     },
-    handleVideoFileSuccess() {},
+    //视频上传成功
+    handleVideoFileSuccess() {
+         this.getMainSpace()
+    },
     //删除单个文件
     handleRemove(file, fileList) {
       const affixId = file.affixId;
 
       spaceAffixDelete(affixId).then(res => {
         if (res.code === 200) {
-          this.$message.success("删除成功！");
-          this.getMainSpace();
+           this.$message({
+						message: '删除成功',
+            type: 'success',
+            duration:"2000"
+					});
+     
         }
       });
     },
@@ -1041,7 +1074,7 @@ export default {
       spaceAffixDelete(affixId).then(res => {
         if (res.code === 200) {
           this.$message.success("删除成功！");
-          this.getMainSpace();
+          // this.getMainSpace();
         }
       });
     },
@@ -1071,10 +1104,15 @@ export default {
       );
     },
     beforeRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${file.name}？`);
+      if(file && file.status==="success"){
+          return this.$confirm(`确定移除 ${file.name}？`);
+      }
+    
     },
     beforeVideoRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${file.name}？`);
+       if(file && file.status==="success"){
+          return this.$confirm(`确定移除 ${file.name}？`);
+      }
     },
 
     beforeAvatarUpload(file) {
@@ -1084,10 +1122,19 @@ export default {
       const extension4 = file.name.split(".")[1] === "docx";
       const isLt2M = file.size / 1024 / 1024 < 10;
       if (!extension && !extension2 && !extension3 && !extension4) {
-        console.log("上传模板只能是 xls、xlsx、doc、docx 格式!");
+        this.$message({
+						message: '上传文件只能是 xls、xlsx格式!',
+            type: 'warning',
+            duration:"9000"
+					});
+
       }
       if (!isLt2M) {
-        console.log("上传模板大小不能超过 10MB!");
+          this.$message({
+						message: '上传文件大小不能超过 10MB!',
+						type: 'warning'
+					});
+
       }
       return extension || extension2 || extension3 || (extension4 && isLt2M);
     },
@@ -1113,7 +1160,19 @@ export default {
       }
     },
     handleClose(tag) {
+    
       this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
+        this.space.aroundSetTag = this.dynamicTags.join(",");
+      
+        this.space.spaceId = JSON.parse(
+          sessionStorage.getItem("space", "spaceId")
+        ).spaceId;
+        spaceUpdate(this.space).then(res => {
+          if (res.code === 200) {
+          }
+        });
+     
+
     },
 
     showInput() {
@@ -1124,32 +1183,31 @@ export default {
     },
 
     handleInputConfirm() {
-      let aroundSetTag = this.space.aroundSetTag;
-      console.log(aroundSetTag);
-      if (aroundSetTag) {
-        this.dynamicTags.push(aroundSetTag);
+      let inputValue = this.inputValue;
+   
+      if (inputValue) {
+        this.dynamicTags.push(inputValue);
         this.space.aroundSetTag = this.dynamicTags.join(",");
-        console.log(this.space.aroundSetTag);
-
+      
         this.space.spaceId = JSON.parse(
           sessionStorage.getItem("space", "spaceId")
         ).spaceId;
-
         spaceUpdate(this.space).then(res => {
           if (res.code === 200) {
-            console.log(res);
           }
         });
       }
       this.inputVisible = false;
-      this.aroundSetTag = "";
+        this.inputValue = '';
     },
     changeSelect() {
-      console.log(this.tabSelect);
-      this.resData.fieldName = this.tabSelect;
+      
+      this.resData.fieldName = this.tabSelect
+     
     },
     // 日历
     handleSelectionChange(e) {
+
       this.roomData = e;
     },
     // 创建房源
@@ -1165,9 +1223,9 @@ export default {
     },
     // 子组件互动值
     handleFunSpace(e) {
-      console.log(e);
+    
       this.spaceId = e;
-      console.log(this.spaceId);
+
       this.getMainSpace();
     },
     // 获取空间详细信息
@@ -1179,6 +1237,31 @@ export default {
       spaceMyspace(params).then(res => {
         if (res.code === 200) {
           console.log(res);
+
+
+          if(JSON.parse( sessionStorage.getItem("space", "spaceId"))){
+  this.form.spaceId = JSON.parse(
+      sessionStorage.getItem("space", "spaceId")
+    ).spaceId;
+
+    this.fileData.recordId = JSON.parse(
+      sessionStorage.getItem("space", "spaceId")
+    ).spaceId;
+
+    console.log(this.fileData.recordId)
+
+    this.resData.recordId = JSON.parse(
+      sessionStorage.getItem("space", "spaceId")
+    ).spaceId;
+
+    
+
+    this.videoData.recordId = JSON.parse(
+      sessionStorage.getItem("space", "spaceId")
+    ).spaceId;
+    }
+    
+    console.log(res)
           this.space.introduction = res.data.introduction;
           this.space.aroundSet = res.data.aroundSet;
           this.space.floorArea = res.data.floorArea;
@@ -1194,12 +1277,18 @@ export default {
           this.filePicList = res.data.imageslist;
           this.videoList = res.data.vediosList;
           this.dynamicTags = res.data.aroundSetTag.split(",");
-          console.log(this.dynamicTags);
+          this.district = res.data.district
+          this.businessDistrict = res.data.businessDistrict
+          this.space.addressDetail = res.data.addressDetail
+          this.subways = res.data.building.subways
+          
+       
         }
       });
       mainspace(params).then(res => {
         if (res.code === 200) {
           this.spaceInfo = res.data;
+          console.log(this.spaceInfo)
           this.buildingId = res.data.buildingId;
           this.companyId = res.data.company.companyId;
           setTimeout(() => {
@@ -1216,11 +1305,8 @@ export default {
       params.spaceId = this.spaceId;
       roomResources(params).then(res => {
         if (res.code === 200) {
-          console.log(res);
-
           this.tableData = res.data.rows;
           this.tableDataTotal = res.data.total;
-          console.log(this.tableData);
         }
       });
     },
@@ -1239,6 +1325,7 @@ export default {
       };
       companyTeam(params).then(res => {
         if (res.code === 200) {
+          console.log(res)
           this.team = res.data;
         }
       });
@@ -1260,7 +1347,7 @@ export default {
     },
     //设置封面
     setSurfaceImages() {
-      console.log("ssss");
+     
     },
     getCompanyTeamLeader() {
       const params = {
@@ -1268,13 +1355,15 @@ export default {
       };
       companyTeamLeader(params).then(res => {
         if (res.code === 200) {
+          // console.log(res)
           this.teamLeader = res.data;
+          console.log(this.teamLeader)
         }
       });
     },
     // 删除招商团队负责人
     handleDelTeamLeader(data) {
-      console.log(data);
+     
       const params = {
         userId: data.userId,
         customerCharge: 0,
@@ -1311,11 +1400,14 @@ export default {
         spaceId: this.spaceId
       };
       this.resetSalesTimeLoading = true;
-      resetSalesTime(params)
+      spaceSaleTime(params)
         .then(res => {
           this.resetSalesTimeLoading = false;
-          if (res === 200) {
+          if (res.code === 200) {
+            this.spaceInfo.company.createTime = res.data
+            console.log(  this.spaceInfo.company.createTime)
             this.$message.success("更新成功！");
+            this.
             this.getRoomResources();
           }
         })
@@ -1324,7 +1416,7 @@ export default {
         });
     },
     handelBox() {
-      console.log("sss");
+ 
     },
     // 删除
     handleRoomResourcesDelete() {
@@ -1335,13 +1427,13 @@ export default {
         this.$message.error("请选择房源！");
         return;
       }
-      console.log(this.roomData);
+    
       for (const item of this.roomData) {
         params.delIds += item.roomId + ",";
       }
-      console.log(params.delIds);
+    
       params.delIds = params.delIds.substring(0, params.delIds.length - 1);
-      console.log(params);
+  
       roomResourcesBatchDelete(params).then(res => {
         if (res.code === 200) {
           this.$message.success("删除成功！");
@@ -1369,13 +1461,18 @@ export default {
     },
     //修改资料简介
     handleChangeEditorSubmit() {
+     this.tetxShow = true
+     
+
       this.space.spaceId = JSON.parse(
         sessionStorage.getItem("space", "spaceId")
       ).spaceId;
 
       spaceUpdate(this.space).then(res => {
         if (res.code === 200) {
-          console.log(res);
+         
+		           
+	   	
         }
       });
 
@@ -1388,7 +1485,7 @@ export default {
 
       spaceUpdate(this.space).then(res => {
         if (res.code === 200) {
-          console.log(res);
+      
         }
       });
 
@@ -1402,7 +1499,7 @@ export default {
 
       spaceUpdate(this.space).then(res => {
         if (res.code === 200) {
-          console.log(res);
+        
         }
       });
 
@@ -1416,7 +1513,7 @@ export default {
 
       spaceUpdate(this.space).then(res => {
         if (res.code === 200) {
-          console.log(res);
+         
         }
       });
 
@@ -1434,13 +1531,11 @@ export default {
 
      spaceImagesList(this.form).then(res => {
         if (res.code === 200) {
-          console.log(res);
+         
           this.imageslist = res.data.imageslist;
-          console.log(this.imageslist)
+       
         }
       });
-
-      
 
       }
       // this.getData()
@@ -1448,21 +1543,19 @@ export default {
 
     handlePicRemove(file, fileList) {
       //移除图片
-      console.log(file);
+ 
     },
     handlePictureCardPreview(file, res) {
       //预览图片时调用
-      console.log(file);
+
 
       this.dialogImageUrl = file.response.data.src;
       this.dialogVisible = true;
     },
-    sssssssssssssssss() {
-      console.log("sss");
-    },
+
     beforeAvatarImgUpload(file, res) {
       //文件上传之前调用做一些拦截限制
-      console.log(file);
+     
       const isJPG = true;
       // const isJPG = file.type === 'image/jpeg';
       const isLt2M = file.size / 1024 / 1024 < 2;
@@ -1476,20 +1569,33 @@ export default {
       return isJPG && isLt2M;
     },
     handleAvatarImgSuccess(res, file, fileList) {
-      //图片上传成功
-      // console.log(res);
-      // this.form.images += res.data.src + ",";
-      // console.log(this.form.images);
-      // this.imageUrl = URL.createObjectURL(file.raw);
+  
+        
+          spaceImagesList(this.form).then(res => {
+        if (res.code === 200) {
+
+           this.imageslist = res.data.imageslist;
+          this.locationImagesList = res.data.locationImagesList;
+          this.effectImagesList = res.data.effectImagesList;
+          this.floorImagesList = res.data.floorImagesList;
+          this.indoorImagesList = res.data.indoorImagesList;
+          this.supportingImagesList = res.data.supportingImagesList;
+         
+     
+       
+        }
+      });
+
+      
     },
     handlePicExceed(files, fileList) {
       //图片上传超过数量限制
       this.$message.error("上传图片不能超过6张!");
-      console.log(file, fileList);
+   
     },
     imgUploadError(err, file, fileList) {
       //图片上传失败调用
-      console.log(err);
+    
       this.$message.error("上传图片失败!");
     },
     // 路由
@@ -1508,7 +1614,15 @@ export default {
     },
 
     handleChangeMapSubmit() {
-      this.mapChange = false;
+this.mapChange = false;
+      this.space.spaceId = JSON.parse(
+        sessionStorage.getItem("space", "spaceId")
+      ).spaceId;
+      spaceUpdate(this.space).then(res => {
+        if (res.code === 200) {
+        }
+      });
+
     },
 
     //显示遮罩
@@ -1519,14 +1633,14 @@ export default {
     handleMouseout() {
       this.hoverShow = false;
       this.current = null;
-      console.log("ddd");
+      
     },
     //设置封页
     handelSetSurfaceImages(affixId) {
       this.form.affixId = affixId;
 
       spaceSetSurfaceImages(this.form).then(res => {
-        console.log(res);
+     
       });
     },
     //删除图片
@@ -1537,7 +1651,7 @@ export default {
       spaceDeleteImages(this.form).then(res => {
         spaceImagesList(this.form).then(res => {
           if (res.code === 200) {
-            console.log(res);
+           
             this.imageslist = res.data.imageslist;
             this.locationImagesList = res.data.locationImagesList;
             this.effectImagesList = res.data.effectImagesList;
@@ -1614,27 +1728,16 @@ export default {
       this.loadScript();
     }
 
-    this.form.spaceId = JSON.parse(
-      sessionStorage.getItem("space", "spaceId")
-    ).spaceId;
-
-    this.fileData.recordId = JSON.parse(
-      sessionStorage.getItem("space", "spaceId")
-    ).spaceId;
-
-    this.resData.recordId = JSON.parse(
-      sessionStorage.getItem("space", "spaceId")
-    ).spaceId;
-
-    this.videoData.recordId = JSON.parse(
-      sessionStorage.getItem("space", "spaceId")
-    ).spaceId;
   },
+
+
   //地图
   computed: {
     mapAddress() {
-      return "北京";
-    }
+      // console.log(this.space.addressDetail)
+      return  this.space.addressDetail;
+    },
+
   },
   watch: {
     mapAddress() {
@@ -2236,9 +2339,10 @@ export default {
 
 #map-box {
   // margin-top: 20px;
-  width: 300px;
-  height: 150px;
+  width: 450px;
+  height: 300px;
   background: #eee;
   // float: right;
+  margin-right: 100px;
 }
 </style>

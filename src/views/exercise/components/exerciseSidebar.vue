@@ -4,7 +4,7 @@
       <h3 class="tit">佣金及活动</h3>
       <li class="bar" @click="handleGoto('/exercise/commission')">佣金政策</li>
       <li class="bar" @click="handleGoto('/exercise/attract')">活动管理</li>
-    <!-- <h3 class="tit">渠道管理</h3>
+    <h3 class="tit">渠道管理</h3>
       <li class="bar">经济公司</li>
       <li class="bar">经纪人</li>
       <li class="bar">渠道分群</li>
@@ -12,7 +12,7 @@
       <li class="bar">短信营销</li>
       <li class="bar">楼宇官网</li>
       <li class="bar">智能小程序</li>
-      <li class="bar">搜索营销</li> -->
+      <li class="bar">搜索营销</li>
     </ul>
   </div>
 </template>

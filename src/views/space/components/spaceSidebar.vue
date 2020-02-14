@@ -36,10 +36,8 @@
 
           <el-form-item
             label="品牌"
-            prop="shortName"
-            :rules="{ required: true, message: '品牌不能为空', trigger: ['blur', 'change'] }"
           >
-            <el-input v-model="form.shortName" style="width: 175px;" />
+            <el-input v-model="shortName" style="width: 175px;"  :disabled="true"/>
           </el-form-item>
           <el-form-item
             label="管理面积"
@@ -64,14 +62,14 @@
               <el-option label="商务中心" value="商务中心" />
               <el-option label="联合办公" value="联合办公" />
               <el-option label="孵化器" value="孵化器" />
-              <el-option label="产业园" value="产业园" />
+            
             </el-select>
           </el-form-item>
         </el-form>
       </div>
       <span slot="footer" class="dialog-footer" style="text-align: center;">
         <el-button size="mini" @click="dialogCreateSpace = false">取 消</el-button>
-        <el-button size="mini" type="primary" @click="onSubmit">确 定</el-button>
+        <el-button size="mini" type="primary" @click="onSubmit('form')">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -80,7 +78,7 @@
 <script>
 import { findMySpaces } from '@/api/exercise'
 import { buildingList } from '@/api/building'
-import { spaceAdd } from '@/api/space'
+import { spaceAdd,companyMycompany } from '@/api/space'
 export default {
   name: 'SpaceSidebar',
   props: {
@@ -89,6 +87,7 @@ export default {
   },
   data() {
     return {
+      shortName:"",
       dialogCreateSpace: false,
       spaceList: [],
       spaceSelect: '',
@@ -114,20 +113,27 @@ export default {
     // 选择楼盘时
     handleClick(row) {
       this.spaceSelect = row.spaceId
-      console.log( this.spaceSelect)
+   
       this.funSpace(row.spaceId)
       sessionStorage.setItem('space', JSON.stringify(row))
-      this.spaceSelect === JSON.parse (sessionStorage.getItem("space",'spaceId'))
+      // this.spaceSelect === JSON.parse (sessionStorage.getItem("space",'spaceId'))
     },
     // 查找我的空间
     getMySpaces() {
       findMySpaces().then(res => {
         if (res.code === 200) {
-          console.log(res) 
-         this.spaceList = res.data
-          this.spaceSelect = JSON.parse(sessionStorage.getItem('space',)).spaceId
+     
+         if(JSON.parse(sessionStorage.getItem('space',))){
+           this.spaceList = res.data
+           this.spaceSelect = JSON.parse(sessionStorage.getItem('space',)).spaceId
+           this.funSpace(this.spaceSelect)
+         }else{
+          this.spaceList = res.data
+           this.spaceSelect = res.data[0].spaceId
+           this.funSpace(res.data[0].spaceId)
+         }
          
-          this.funSpace(this.spaceSelect)
+         
          
         }
       })
@@ -136,6 +142,12 @@ export default {
     dialogCreateSpaceShow() {
       this.dialogCreateSpace = true
       this.getBuildingList()
+
+      companyMycompany().then(res=>{
+        // console.log(res)
+        this.shortName  = res.data.shortName
+
+      })
     },
     // 远程搜索
     handleBuildingMethod(e) {
@@ -148,8 +160,8 @@ export default {
     getBuildingList(data) {
       buildingList(data).then(res => {
         if (res.code === 200) {
-          console.log("Sss")
           console.log(res)
+    
           this.buildingList = res.data.rows
         }
       })
@@ -158,7 +170,7 @@ export default {
     handleBuildingChange() {
       for (const item of this.buildingList) {
         if (item.buildingId === this.buildingSelected) {
-          this.form.shortName = item.buildingName
+          this.form.shortName = ""
           this.form.buildingId = item.buildingId
           this.form.projectType = item.buildingtype
           this.form.addressDetail = item.detail
@@ -166,19 +178,19 @@ export default {
       }
     },
     // 新增楼盘
-    onSubmit() {
-      this.$refs['form'].validate((valid) => {
+    onSubmit(form) {
+      this.$refs[form].validate((valid) => {
         if (valid) {
           const formStr = JSON.stringify(this.form)
           const params = JSON.parse(formStr)
           params.companyId = this.companyId
+          this.buildingSelected = ""
           spaceAdd(params).then(res => {
             if (res.code === 200) {
               this.$message.success('添加成功！')
               this.dialogCreateSpace = false
-              this.form.buildingId = ''
-              this.form.manageArea = ''
-              this.form.shortName = ''
+              this.form.manageArea = ' '
+              this.form.shortName = ' '
               this.form.projectType = '写字楼'
               this.form.addressDetail = ''
               this.getMySpaces()

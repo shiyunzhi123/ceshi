@@ -95,6 +95,14 @@
             <span v-if="form.workstationType === '独立空间'" class="jian">
               <el-input v-model="form.personPerRoom" style="width: 135px;" placeholder />人/间
             </span>
+
+            <span v-if="form.workstationType === '移动工位'" class="jian">
+              <el-input v-model="form.workstationNumber" style="width: 135px;" placeholder />个
+            </span>
+
+               <span v-if="form.workstationType === '开放工位'" class="jian">
+              <el-input v-model="form.personPerRoom" style="width: 135px;" placeholder />个
+            </span>
           </el-form-item>
         </el-collapse-transition>
 
@@ -293,6 +301,7 @@ export default {
       pathName: "",
       buildingList: [],
       form: {
+        workstationNumber:"",
         spaceId: "",
         buildingId: "",
         businessType: "",
@@ -511,6 +520,7 @@ export default {
     getBuildingList() {
       buildingList().then(res => {
         if (res.code === 200) {
+          console.log(res)
           this.buildingList = res.data.rows;
         }
       });

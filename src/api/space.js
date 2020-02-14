@@ -109,4 +109,24 @@ export function  spaceDeleteImages(data) {
 }
 
 
+//公司品牌
+export function  companyMycompany() {
+ 
+  // console.log(params)
+  return requestCustom({
+    url: `/company/mycompany`,
+    method: 'get',
+    // params: data
+  })
+}
 
+
+//核销时间
+export function  spaceSaleTime(data) {
+  const params = qs.stringify(data)
+  return requestCustom({
+    url: `/space/saleTime`,
+    method: 'get',
+    params: data
+  })
+}

@@ -14,7 +14,7 @@ import router from './router'
 
 import '@/icons' // icon
 import '@/permission' // permission control
-
+import './utils/dialog.js'
 import VCalendar from 'v-calendar'
 import 'v-calendar/lib/v-calendar.min.css'
 
