@@ -20,7 +20,7 @@
         </li>
       </ul>
 
-      <!-- <h3 class="tit">推荐应用</h3>
+      <h3 class="tit">推荐应用</h3>
       <ul class="block">
         <li class="app4">
           楼盘官网
@@ -34,7 +34,7 @@
           百度小程序
           <small>可根据房源设置灵活多样的短信营销</small>
         </li>
-      </ul> -->
+      </ul>
     </div>
   </div>
 </template>

@@ -27,7 +27,7 @@
 
          <span
           class="head"
-          v-for="(item, i) in team"
+          v-for="(item, i) in teamLeader"
           :key="item.id"
           :class="'bg'+(i+1)"
         >{{ item.username | formatFirstKey }}</span>
@@ -76,7 +76,7 @@
         <ul class="item-block">
           <li class="item purple">
             <span class="tit">在租面积</span>
-            <span class="con">{{ spaceInfo.manageArea }}m²</span>
+            <span class="con">{{ spaceInfo.totleRentArea }}m²</span>
           </li>
           <li class="item indigo">
             <span class="tit">管理面积</span>
@@ -313,12 +313,13 @@
                   :on-success="handleFileSuccess"
                   :on-remove="handleRemove"
                   :before-remove="beforeRemove"
-                  multiple
+                   multiple
                   :headers="headers"
                   :limit="3"
                   :on-exceed="handleExceed"
                   :file-list="fileList"
                   :before-upload="beforeAvatarUpload"
+
                 >
                   <div class="uploadFile">
                     <el-button type="primary" size="mini">
@@ -721,8 +722,8 @@
                 </el-tabs>
               </div>
               <span slot="footer" class="dialog-footer">
-                <el-button @click="ChangePic = false">取 消</el-button>
-                <el-button type="primary" @click="handleChangeSelectSubmit">保存</el-button>
+                <el-button @click="ChangePic = false">关闭</el-button>
+                <!-- <el-button type="primary" @click="handleChangeSelectSubmit">保存</el-button> -->
               </span>
             </el-dialog>
 
@@ -892,7 +893,7 @@ export default {
       tabPosition: "left",
       dialogDrag: true,
       introduction: "",
-      dynamicTags: [],
+      dynamicTags: ['便利','ddd'],
       inputVisible: false,
       resetSalesTimeLoading: false,
       buildingId: "",
@@ -1058,14 +1059,14 @@ export default {
       const affixId = file.affixId;
 
       spaceAffixDelete(affixId).then(res => {
-        if (res.code === 200) {
-           this.$message({
-						message: '删除成功',
-            type: 'success',
-            duration:"2000"
-					});
+        // if (res.code === 200) {
+        //    this.$message({
+				// 		message: '删除成功',
+        //     type: 'success',
+        //     duration:"2000"
+				// 	});
      
-        }
+        
       });
     },
     //删除单个视频
@@ -1123,7 +1124,7 @@ export default {
       const isLt2M = file.size / 1024 / 1024 < 10;
       if (!extension && !extension2 && !extension3 && !extension4) {
         this.$message({
-						message: '上传文件只能是 xls、xlsx格式!',
+						message: '上传文件只能是 xls、xlsx、doc、docx格式!',
             type: 'warning',
             duration:"9000"
 					});
@@ -1276,7 +1277,15 @@ export default {
           this.fileList = res.data.filesList;
           this.filePicList = res.data.imageslist;
           this.videoList = res.data.vediosList;
+          
           this.dynamicTags = res.data.aroundSetTag.split(",");
+          console.log(this.dynamicTags)
+           if(this.dynamicTags[0]===''){
+             this.dynamicTags[0]='便利'
+             
+           }else{
+              this.dynamicTags = res.data.aroundSetTag.split(",");
+           }
           this.district = res.data.district
           this.businessDistrict = res.data.businessDistrict
           this.space.addressDetail = res.data.addressDetail
@@ -1479,16 +1488,7 @@ export default {
       this.changeEditor = false;
     },
     handleChangeSelectSubmit() {
-      this.space.spaceId = JSON.parse(
-        sessionStorage.getItem("space", "spaceId")
-      ).spaceId;
-
-      spaceUpdate(this.space).then(res => {
-        if (res.code === 200) {
-      
-        }
-      });
-
+     
       this.ChangePic = false;
     },
     //修改基础信息
@@ -2158,9 +2158,7 @@ this.mapChange = false;
   margin-left: 10px;
   vertical-align: bottom;
 }
-.upload-demo {
-  margin-top: -50px;
-}
+
 .uploadFile {
   float: right;
 }
@@ -2238,8 +2236,10 @@ this.mapChange = false;
   margin-top: 15px;
 }
 .upload-demo >>> .el-upload {
-  height: 40px;
-  display: block;
+  // height: 40px;
+  // display: block;
+  float: right;
+  margin-top: -48px;
 }
 .el-icon-plus-second {
   display: flex;

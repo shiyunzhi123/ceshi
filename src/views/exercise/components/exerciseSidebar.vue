@@ -1,14 +1,23 @@
 <template>
   <div class="exercise-sidebar">
     <ul class="sidebar">
-      <h3 class="tit">佣金及活动</h3>
+      <h3 class="tit">渠道政策</h3>
       <li class="bar" @click="handleGoto('/exercise/commission')">佣金政策</li>
-      <li class="bar" @click="handleGoto('/exercise/attract')">活动管理</li>
+      <!-- <li class="bar" @click="handleGoto('/exercise/attract')">活动管理</li> -->
+      <li class="bar" @click="handleGoto('/exercise/attract')">对经纪人活动</li>
+
+    <h3 class="tit">客户活动</h3>
+      <li class="bar">免租期</li>
+      <li class="bar">特价房</li>
+  
+
     <h3 class="tit">渠道管理</h3>
-      <li class="bar">经济公司</li>
+      <li class="bar">经纪公司</li>
       <li class="bar">经纪人</li>
       <li class="bar">渠道分群</li>
-    <h3 class="tit">渠道分群</h3>
+ 
+
+    <h3 class="tit">营销</h3>
       <li class="bar">短信营销</li>
       <li class="bar">楼宇官网</li>
       <li class="bar">智能小程序</li>
