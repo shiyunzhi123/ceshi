@@ -128,7 +128,7 @@
                   <svg-icon icon-class="remove" />删除
                 </li>
               </ul>
-              <a class="txt">核销时间：{{ spaceInfo.company.createTime }}</a>
+              <a class="txt">核销时间：{{ space.createTime }}</a>
               <el-button
                 size="small"
                 type="primary"
@@ -221,7 +221,11 @@
               </el-table-column>
               <el-table-column prop="endTime" label="佣金活动" width="120">
                 <template slot-scope="scope">
-                  <div v-for="item in scope.row.activityList" :key="item">{{ item }}</div>
+                  <!-- <div>{{scope.row.activityNames}}</div> -->
+                  <div>{{scope.row.commissionName}}</div>
+                 
+                  <div >{{ scope.row.activities }}</div>   
+
                 </template>
               </el-table-column>
               <el-table-column prop="registrable" label="装修/注册" width="100">
@@ -1277,6 +1281,7 @@ export default {
           this.fileList = res.data.filesList;
           this.filePicList = res.data.imageslist;
           this.videoList = res.data.vediosList;
+          this.space.createTime  = res.data.createTime
           
           this.dynamicTags = res.data.aroundSetTag.split(",");
           console.log(this.dynamicTags)
@@ -1291,6 +1296,18 @@ export default {
           this.space.addressDetail = res.data.addressDetail
           this.subways = res.data.building.subways
           
+
+
+        spaceSaleTime(params)
+        .then(res => {
+   
+          if (res.code === 200) {
+            this.spaceInfo.company.createTime = res.data
+            console.log(this.spaceInfo.company.createTime)
+
+            this.getRoomResources();
+          }
+        })
        
         }
       });
@@ -1314,6 +1331,7 @@ export default {
       params.spaceId = this.spaceId;
       roomResources(params).then(res => {
         if (res.code === 200) {
+          console.log(this.tableData)
           this.tableData = res.data.rows;
           this.tableDataTotal = res.data.total;
         }
@@ -1413,7 +1431,7 @@ export default {
         .then(res => {
           this.resetSalesTimeLoading = false;
           if (res.code === 200) {
-            this.spaceInfo.company.createTime = res.data
+            this.space.createTime = res.data
             console.log(  this.spaceInfo.company.createTime)
             this.$message.success("更新成功！");
             this.
@@ -1614,7 +1632,7 @@ export default {
     },
 
     handleChangeMapSubmit() {
-this.mapChange = false;
+          this.mapChange = false;
       this.space.spaceId = JSON.parse(
         sessionStorage.getItem("space", "spaceId")
       ).spaceId;
@@ -1707,13 +1725,14 @@ this.mapChange = false;
           renderOptions: { map: map, panel: "r-result" },
           onSearchComplete(e) {
             that.subwayCount = e[0].YA;
-            that.fastCount = e[1].YA;
-            that.bankCount = e[2].YA;
-            that.hotelCount = e[3].YA;
+            // that.fastCount = e[1].YA;
+            // that.bankCount = e[2].YA;
+            // that.hotelCount = e[3].YA;
           }
         });
-        var search = ["地铁", "餐厅", "银行", "酒店"];
+        var search = ["地铁"];
         local.searchNearby(search, point, 1000);
+        console.log(local)
         setTimeout(() => {
           map.clearOverlays();
           var marker = new window.BMap.Marker(point);
@@ -1721,6 +1740,7 @@ this.mapChange = false;
         }, 4000);
       });
       localSearch.search(this.mapAddress);
+      // console.log(localSearch)
     }
   },
   mounted() {

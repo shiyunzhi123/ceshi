@@ -19,9 +19,19 @@ export function commissionAdd(data) {
     params: data
   })
 }
+
+
+// 查询
+export function commissionDetail(data) {
+  return requestCustom({
+    url: `/commission/detail/${data.id}`,
+    method: 'get',
+    params: data
+  })
+}
+
 // 更新
 export function commissionUpdate(data) {
-  const params = qs.stringify(data)
   return requestCustom({
     url: `/commission/update`,
     method: 'post',
@@ -33,6 +43,51 @@ export function commissionDelete(data) {
   return requestCustom({
     url: `/commission/delete`,
     method: 'delete',
+    params: data
+  })
+}
+
+//作废
+
+export function commissionDisable(data) {
+  const params = qs.stringify(data)
+  return requestCustom({
+    url: `/commission/disable`,
+    method: 'post',
+    params: data
+  })
+}
+
+//使用佣金
+
+export function roomCommissionAdd(data) {
+  const params = qs.stringify(data)
+  return requestCustom({
+    url: `/roomCommission/add`,
+    method: 'post',
+    params: data
+  })
+}
+
+
+//取消使用
+export function roomCommissionCancle(data) {
+  const params = qs.stringify(data)
+  return requestCustom({
+    url: `/roomCommission/cancle`,
+    method: 'post',
+    params: data
+  })
+}
+
+
+
+//佣金对应的数据列表
+export function commissionRoomList(data) {
+  const params = qs.stringify(data)
+  return requestCustom({
+    url: `/commission/roomList`,
+    method: 'get',
     params: data
   })
 }

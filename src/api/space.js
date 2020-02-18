@@ -130,3 +130,17 @@ export function  spaceSaleTime(data) {
     params: data
   })
 }
+
+
+
+
+// export function  spaceSaleTime(data) {
+//   const params = qs.stringify(data)
+//   return requestCustom({
+//     url: `/roomResources/resetSalesTime`,
+//     method: 'post',
+//     params: data
+//   })
+// }
+
+

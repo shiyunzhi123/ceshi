@@ -12,8 +12,9 @@
         <ul class="btn">
           <!-- <li><svg-icon icon-class="funnel" /> 过滤</li>
           <li>|</li> -->
-          <li @click="handleCommissionDelete"><svg-icon icon-class="remove" /> 删除</li>
-          <!-- <li @click="handleCommissionZf"><svg-icon icon-class="remove" /> 作废</li> -->
+
+          <li @click="handleCommissionDelete" v-if="this.form.status === '未开始'" ><svg-icon icon-class="remove" /> 删除</li>
+          <li @click="handleCommissionZf" v-if="this.form.status === '进行中'"><svg-icon icon-class="remove" /> 作废</li>
         </ul>
         <el-button size="small" type="primary" @click="handleCommissionCreate">创建佣金政策</el-button>
       </div>
@@ -32,7 +33,7 @@
         />
         <el-table-column label="活动名称">
           <template slot-scope="scope">
-            <a class="table-row">{{ scope.row.cmsnName }} <svg-icon icon-class="edit" /></a>
+            <a class="table-row">{{ scope.row.cmsnName }} <svg-icon icon-class="edit" @click="handleEdit(scope.row)"/></a>
           </template>
         </el-table-column>
         <el-table-column
@@ -78,7 +79,7 @@
 
 <script>
 import { commissionList } from '@/api/exercise'
-import { commissionDelete, commissionUpdate } from '@/api/commission'
+import { commissionDelete, commissionUpdate,commissionDisable,roomCommissionAdd } from '@/api/commission'
 export default {
   data() {
     return {
@@ -179,9 +180,28 @@ export default {
     },
     // 作废
     handleCommissionZf() {
-      commissionUpdate(this.formZf).then(res => {
-
+       this.$confirm('确定删除选中佣金吗?', '', {
+        confirmButtonText: '确定作废',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+      commissionDisable(this.formDelete).then(res => {
+          if (res.code === 200) {
+            this.$message({
+              type: 'success',
+              message: '作废成功!'
+            })
+            this.getData()
+          }
+        })
+      }).catch(() => {
       })
+      
+    },
+
+    handleEdit(e){
+       const id = e.cmsnId
+      this.$router.push({ name: 'CommissionCreate', params: { id }})
     }
   }
 }

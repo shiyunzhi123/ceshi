@@ -12,7 +12,9 @@
         <ul class="btn">
           <!-- <li><svg-icon icon-class="funnel" /> 过滤</li>
           <li>|</li> -->
-          <li @click="handleRemove"><svg-icon icon-class="remove" /> 删除</li>
+        
+          <li @click="handleCommissionDelete" v-if="this.form.status === '未开始'" ><svg-icon icon-class="remove" /> 删除</li>
+          <li @click="handleCommissionZf" v-if="this.form.status === '进行中'"><svg-icon icon-class="remove" /> 作废</li>
         </ul>
         <el-button size="small" type="primary" @click="handleAddActive">添加活动</el-button>
       </div>
@@ -64,7 +66,7 @@
 
 <script>
 import { activityList } from '@/api/exercise'
-import { activityDelete } from '@/api/activity'
+import { activityDelete, activityDisable} from '@/api/activity'
 export default {
   name: 'Attract',
   data() {
@@ -138,7 +140,7 @@ export default {
       this.$router.push({ name: 'AttractCreate' })
     },
     // 删除活动
-    handleRemove() {
+    handleCommissionDelete() {
       this.$confirm('确定删除选中活动吗?', '', {
         confirmButtonText: '确定删除',
         cancelButtonText: '取消',
@@ -157,6 +159,28 @@ export default {
       }).catch(() => {
       })
     },
+
+ // 作废
+    handleCommissionZf() {
+       this.$confirm('确定删除选中佣金吗?', '', {
+        confirmButtonText: '确定作废',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+      activityDisable(this.formDelete).then(res => {
+          if (res.code === 200) {
+            this.$message({
+              type: 'success',
+              message: '作废成功!'
+            })
+            this.getData()
+          }
+        })
+      }).catch(() => {
+      })
+      
+    },
+
     // 编辑
     handleEdit(e) {
       const id = e.actyId
