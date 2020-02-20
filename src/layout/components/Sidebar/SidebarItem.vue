@@ -93,3 +93,12 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+
+   
+ .menu-wrapper:nth-child(4){
+   display: none;
+ }
+
+</style>

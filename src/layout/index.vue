@@ -14,6 +14,7 @@
 <script>
 import { Navbar, Sidebar, AppMain } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
+import {userUpdate} from  '@/api/space'
 
 export default {
   name: 'Layout',

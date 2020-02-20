@@ -64,3 +64,12 @@ export function customerList(data) {
   })
 }
 
+//人员信息
+
+export function userCustomerInfo() {
+  return requestCustom({
+    url: `/user/customer/info`,
+    method: 'get',
+    // params: data
+  })
+}

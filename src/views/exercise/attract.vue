@@ -1,6 +1,9 @@
 <template>
   <div class="exercise">
-    <div class="path">活动管理</div>
+     <div class="sidebar">
+      <exercise-sidebar />
+    </div>
+    <!-- <div class="path">活动管理</div> -->
     <div class="exercise-content">
       <ul class="tag">
         <li class="list" :class="form.status === '进行中' ? 'on' : ''" @click="handleChangeStatus('进行中')">进行中</li>
@@ -65,10 +68,12 @@
 </template>
 
 <script>
+import exerciseSidebar from './components/exerciseSidebar'
 import { activityList } from '@/api/exercise'
 import { activityDelete, activityDisable} from '@/api/activity'
 export default {
   name: 'Attract',
+   components: { exerciseSidebar },
   data() {
     return {
       tableData: [],
@@ -204,7 +209,8 @@ export default {
     }
   }
   .exercise-content {
-    background: #FFF; border: 1px solid #DDD; border-radius: 3px; padding: 20px;
+    background: #FFF; border: 1px solid #DDD; border-radius: 3px; padding: 20px;float: right;
+    width: 90%;
     .tag {
       display: block; width: 100%; list-style: none;
       border-bottom: 1px solid #DDD;
@@ -240,4 +246,13 @@ export default {
   .pagination {text-align: center; padding: 20px 0 0;}
   /deep/ .el-table__header th {background: #f2f3f4;}
 }
+
+ .sidebar {
+    // position: fixed; left: 50px; top: 50px; bottom: 0;
+    min-height: calc(100vh - 70px);
+    float: left;
+    width: 135px; padding: 15px 10px 15px 15px; box-sizing: border-box;
+    border-right: 1px solid #EEE;
+    background: #FFF;
+  }
 </style>

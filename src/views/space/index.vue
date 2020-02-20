@@ -23,15 +23,15 @@
         <!-- <a class="head" v-for="(item) in teamLeader" :key="item.id">
           <img :src="item.avatar" />
           <span :data-id="item.userId" class="del" @click="handleDelTeamLeader(item)">x</span>
-        </a> -->
+        </a>-->
 
-         <span
+        <span
           class="head"
           v-for="(item, i) in teamLeader"
           :key="item.id"
           :class="'bg'+(i+1)"
-        >{{ item.username | formatFirstKey }}</span>
-        <a class="head-add" @click="handleSetCompanyTeam">+</a>
+        >{{ item.realName | formatFirstKey }}</span>
+        <a class="head-add" @click="handleSetCompanyTeamLeader">+</a>
       </div>
 
       <h3 class="title">招商团队</h3>
@@ -41,7 +41,7 @@
           v-for="(item, i) in team"
           :key="item.id"
           :class="'bg'+(i+1)"
-        >{{ item.username | formatFirstKey }}</span>
+        >{{ item.realName | formatFirstKey }}</span>
         <a class="head-add" @click="handleSetCompanyTeam">+</a>
       </div>
 
@@ -194,19 +194,15 @@
               </el-table-column>
 
               <el-table-column label="出租时间" width="110">
-                <template slot-scope="scope" >
-
-               
-                 <div v-if="scope.row.leaseType ==='现房出租' ">
-                    <div>{{  scope.row.leaseType }}</div>
+                <template slot-scope="scope">
+                  <div v-if="scope.row.leaseType ==='现房出租' ">
+                    <div>{{ scope.row.leaseType }}</div>
                   </div>
 
-                      <div v-if="scope.row.leaseType ==='预约出租' ">
-                    <div>{{  scope.row.vacantTime }}</div>
+                  <div v-if="scope.row.leaseType ==='预约出租' ">
+                    <div>{{ scope.row.vacantTime }}</div>
                   </div>
-                  
-                  
-                  </template>
+                </template>
               </el-table-column>
               <el-table-column prop="roomState" label="房源状态" width="120">
                 <template slot-scope="scope">
@@ -223,19 +219,14 @@
                 <template slot-scope="scope">
                   <!-- <div>{{scope.row.activityNames}}</div> -->
                   <div>{{scope.row.commissionName}}</div>
-                 
-                  <div >{{ scope.row.activities }}</div>   
 
+                  <div>{{ scope.row.activityNames}}</div>
                 </template>
               </el-table-column>
               <el-table-column prop="registrable" label="装修/注册" width="100">
-             
                 <template slot-scope="scope">
                   <div>{{scope.row.renovation}}</div>
-                  <div>
-                     {{ scope.row.registrable === '1' ? '可注册' : '不可注册' }}
-                  </div>
-                 
+                  <div>{{ scope.row.registrable === '1' ? '可注册' : '不可注册' }}</div>
                 </template>
               </el-table-column>
             </el-table>
@@ -251,22 +242,80 @@
               ></el-pagination>
             </div>
 
-            <el-dialog
+             <el-dialog
               title="设置招商团队"
               :visible.sync="dialogSetCompanyTeam"
-              width="30%"
+              width="25%"
               :before-close="dialogSetCompanyTeamClose"
             >
-              <div class="setCompanyTeamCon">
-                <a
-                  v-for="(item, i) in companyTeam"
-                  class="list"
-                  :class="'bg' + i"
-                >{{ item.username | formatFirstKey }}</a>
-              </div>
+           
+              <el-form size="mini" label-width="80px" :model="charForm" ref="ruleForm" >
+                <el-form-item label="真实姓名" prop="realName">
+                  <el-input style="width:80%;" v-model="charForm.realName"></el-input>
+                </el-form-item>
+
+                <el-form-item label="登录名" prop="username">
+                  <el-input style="width:80%;" v-model="charForm.username"></el-input>
+                </el-form-item>
+
+                <el-form-item label="电话" prop="mobile">
+                  <el-input style="width:80%;" v-model="charForm.mobile"></el-input>
+                </el-form-item>
+
+                <el-form-item label="邮箱" prop="email">
+                  <el-input style="width:80%;" v-model="charForm.email"></el-input>
+                </el-form-item>
+
+                <el-form-item label="性别" prop="sex">
+                  <el-radio-group v-model="charForm.sex">
+                    <el-radio label="0">男</el-radio>
+                    <el-radio label="1">女</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+              </el-form>
+
               <span slot="footer" class="dialog-footer">
                 <el-button size="small" @click="dialogSetCompanyTeam = false">取 消</el-button>
-                <el-button size="small" type="primary">确 定</el-button>
+                <el-button size="small" type="primary" @click="handeldCompanyTeamSubmit('formName')">确 定</el-button>
+              </span>
+            </el-dialog> 
+
+
+              <el-dialog
+              title="设置招商负责人"
+              :visible.sync="dialogSetCompanyTeamLeader"
+              width="25%"
+              :before-close="dialogSetCompanyTeamLeaderClose"
+            >
+           
+              <el-form size="mini" label-width="80px" :model="charForm" ref="ruleForm">
+                <el-form-item label="真实姓名" prop="realName">
+                  <el-input style="width:80%;" v-model="charForm.realName"></el-input>
+                </el-form-item>
+
+                <el-form-item label="登录名" prop="username">
+                  <el-input style="width:80%;" v-model="charForm.username"></el-input>
+                </el-form-item>
+
+                <el-form-item label="电话" prop="mobile">
+                  <el-input style="width:80%;" v-model="charForm.mobile"></el-input>
+                </el-form-item>
+
+                <el-form-item label="邮箱" prop="email">
+                  <el-input style="width:80%;" v-model="charForm.email"></el-input>
+                </el-form-item>
+
+                <el-form-item label="性别" prop="sex">
+                  <el-radio-group v-model="charForm.sex">
+                    <el-radio label="0">男</el-radio>
+                    <el-radio label="1">女</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+              </el-form>
+
+              <span slot="footer" class="dialog-footer">
+                <el-button size="small" @click="dialogSetCompanyTeamLeader = false">取 消</el-button>
+                <el-button size="small" type="primary" @click="handeldCompanyTeamLeaderSubmit">确 定</el-button>
               </span>
             </el-dialog>
 
@@ -298,9 +347,17 @@
                 </div>
               </h2>
               <div class="briefIntroduction">
-                <p id="showAll" :class="{ellpes:!showAll}"  style="text-indent:2rem; white-space: pre-wrap"> {{this.space.introduction}}</p>
-               
-                <a @click="fun_showAll" v-show="tetxShow" href="javascript:void(0)">[{{showAll?"收起":"展开"}}]</a>
+                <p
+                  id="showAll"
+                  :class="{ellpes:!showAll}"
+                  style="text-indent:2rem; white-space: pre-wrap"
+                >{{this.space.introduction}}</p>
+
+                <a
+                  @click="fun_showAll"
+                  v-show="tetxShow"
+                  href="javascript:void(0)"
+                >[{{showAll?"收起":"展开"}}]</a>
               </div>
             </div>
 
@@ -317,13 +374,12 @@
                   :on-success="handleFileSuccess"
                   :on-remove="handleRemove"
                   :before-remove="beforeRemove"
-                   multiple
+                  multiple
                   :headers="headers"
                   :limit="3"
                   :on-exceed="handleExceed"
                   :file-list="fileList"
                   :before-upload="beforeAvatarUpload"
-
                 >
                   <div class="uploadFile">
                     <el-button type="primary" size="mini">
@@ -348,7 +404,7 @@
                   :on-success="handleVideoFileSuccess"
                   :on-remove="handleVideoRemove"
                   :before-remove="beforeVideoRemove"
-                   multiple
+                  multiple
                   :headers="headers"
                   :limit="3"
                   :on-exceed="handleExceed"
@@ -420,26 +476,22 @@
                 </div>
               </h2>
               <div class="briefIntroduction">
-                  
-                   
-                    <el-upload
-                      ref="upload"
-                      action="#"
-                      list-type="picture-card"
-                      accept="image/*"
-                      :headers="headers"
-                      :data="resData "
-                      :limit="imgLimit"
-                      :file-list="imageslist"
-                      :disabled ="true"
-                    >
-                      <i class="el-icon-plus " @click="handleChangePic"></i>
-                    </el-upload>
-                    <el-dialog :visible.sync="dialogVisible">
-                      <img width="80%" height="10%" :src="dialogImageUrl" class="avatar" alt />
-                    </el-dialog>
-                
-
+                <el-upload
+                  ref="upload"
+                  action="#"
+                  list-type="picture-card"
+                  accept="image/*"
+                  :headers="headers"
+                  :data="resData "
+                  :limit="imgLimit"
+                  :file-list="imageslist"
+                  :disabled="true"
+                >
+                  <i class="el-icon-plus" @click="handleChangePic"></i>
+                </el-upload>
+                <el-dialog :visible.sync="dialogVisible">
+                  <img width="80%" height="10%" :src="dialogImageUrl" class="avatar" alt />
+                </el-dialog>
               </div>
             </div>
 
@@ -450,7 +502,10 @@
                   <el-button type="primary" size="mini" @click="handleAroundSet">编辑</el-button>
                 </div>
               </h2>
-              <div class="briefIntroduction" style="text-indent:2rem; white-space: pre-wrap">{{this.space.aroundSet}}</div>
+              <div
+                class="briefIntroduction"
+                style="text-indent:2rem; white-space: pre-wrap"
+              >{{this.space.aroundSet}}</div>
               <el-tag
                 :key="tag"
                 v-for="tag in dynamicTags"
@@ -477,18 +532,17 @@
                   <el-button type="primary" size="mini" @click="handleMapSet">编辑</el-button>
                 </div>
               </h2>
-              <div
-                class="briefIntroduction"
-                style="display: flex;justify-content: space-between;"
-              >
+              <div class="briefIntroduction" style="display: flex;justify-content: space-between;">
                 <div class="addressBox clearfix">
                   <div class="addressList fl">
                     <p>
                       <em class="icon em1"></em>
-                      <i>[{{this.district}}-{{this.businessDistrict}}]</i>{{this.space.addressDetail}}
+                      <i>[{{this.district}}-{{this.businessDistrict}}]</i>
+                      {{this.space.addressDetail}}
                     </p>
                     <p>
-                      <em class="icon em2"></em>距离 {{this.subways}}
+                      <em class="icon em2"></em>
+                      距离 {{this.subways}}
                     </p>
                   </div>
                 </div>
@@ -551,19 +605,22 @@
             </el-dialog>
 
             <el-dialog title="位置编辑" :visible.sync="mapChange" width="360px">
-              <div >
+              <div>
                 <el-form size="mini" label-width="40px">
                   <el-form-item label="地址">
                     <el-input style="width:100px;" :disabled="true" v-model="district"></el-input>
                     <el-input style="width:100px;" :disabled="true" v-model="businessDistrict"></el-input>
-                    
                   </el-form-item>
-             
 
-                 <el-form-item label="">
-                    <el-input style="width:250px;"  v-model="space.addressDetail"></el-input>
+                  <el-form-item label>
+                    <el-input style="width:250px;" v-model="space.addressDetail"></el-input>
                   </el-form-item>
-                   </el-form>
+
+
+                  <el-form-item label="距离" width="50px">
+                    <el-input style="width:250px;" v-model="subways"></el-input>
+                  </el-form-item>
+                </el-form>
               </div>
               <span slot="footer" class="dialog-footer">
                 <el-button @click="mapChange = false">取 消</el-button>
@@ -787,7 +844,7 @@
 
             <el-dialog title="编辑" :visible.sync="changeEditor" width="500px" :modal="false">
               <div style="text-align: center;">
-                <el-input type="textarea" v-model="space.introduction"  :rows="6" ></el-input>
+                <el-input type="textarea" v-model="space.introduction" :rows="6"></el-input>
               </div>
               <span slot="footer" class="dialog-footer">
                 <el-button @click="changeEditor = false">取 消</el-button>
@@ -823,11 +880,13 @@ import {
   spaceImagesList,
   spaceSetSurfaceImages,
   spaceDeleteImages,
-  spaceSaleTime
+  spaceSaleTime,
+  resetSalesTime,
+  addChargerLeader,
+  addCustomer,
 } from "@/api/space";
 import {
   roomResources,
-  resetSalesTime,
   roomResourcesDelete,
   roomResourcesBatchDelete,
   roomResourcesUpdate
@@ -873,11 +932,12 @@ export default {
       headers: {
         Authorization: ""
       },
-      tetxShow:"",
-      subways:"",
-      brandName:"",
-      businessDistrict:"",
-      district:"",
+      
+      tetxShow: "",
+      subways: "",
+      brandName: "",
+      businessDistrict: "",
+      district: "",
       effectImagesList: [],
       floorImagesList: [],
       indoorImagesList: [],
@@ -897,7 +957,7 @@ export default {
       tabPosition: "left",
       dialogDrag: true,
       introduction: "",
-      dynamicTags: ['便利','ddd'],
+      dynamicTags: ["便利", "ddd"],
       inputVisible: false,
       resetSalesTimeLoading: false,
       buildingId: "",
@@ -916,7 +976,16 @@ export default {
       changeAround: false,
       uploadImgChange: false,
       mapChange: false,
-      inputValue:"",
+      inputValue: "",
+      charForm:{
+        email:"",
+        mobile:"",
+        realName:"",
+        sex:"",
+        username:"",
+        companyId:'',
+
+      },
       space: {
         spaceId: "",
         introduction: "",
@@ -937,7 +1006,7 @@ export default {
         floorImages: "",
         supportingImages: "",
         effectImages: "",
-        addressDetail:""
+        addressDetail: ""
       },
       spaceInfo: {
         buildingId: "",
@@ -987,6 +1056,7 @@ export default {
           }
         }
       ],
+      dialogSetCompanyTeamLeader:false,
       dialogSetCompanyTeam: false,
       companyTeam: [],
       roomSearchForm: {
@@ -1032,11 +1102,9 @@ export default {
     handleChangePic() {
       this.ChangePic = true;
 
-    
       //获取图片
       spaceImagesList(this.form).then(res => {
         if (res.code === 200) {
-       
           this.imageslist = res.data.imageslist;
           this.locationImagesList = res.data.locationImagesList;
           this.effectImagesList = res.data.effectImagesList;
@@ -1050,13 +1118,11 @@ export default {
     //文件的上传
 
     handleFileSuccess(res, file, fileList) {
-
-         this.getMainSpace()
-    
+      this.getMainSpace();
     },
     //视频上传成功
     handleVideoFileSuccess() {
-         this.getMainSpace()
+      this.getMainSpace();
     },
     //删除单个文件
     handleRemove(file, fileList) {
@@ -1065,12 +1131,10 @@ export default {
       spaceAffixDelete(affixId).then(res => {
         // if (res.code === 200) {
         //    this.$message({
-				// 		message: '删除成功',
+        // 		message: '删除成功',
         //     type: 'success',
         //     duration:"2000"
-				// 	});
-     
-        
+        // 	});
       });
     },
     //删除单个视频
@@ -1109,14 +1173,13 @@ export default {
       );
     },
     beforeRemove(file, fileList) {
-      if(file && file.status==="success"){
-          return this.$confirm(`确定移除 ${file.name}？`);
+      if (file && file.status === "success") {
+        return this.$confirm(`确定移除 ${file.name}？`);
       }
-    
     },
     beforeVideoRemove(file, fileList) {
-       if(file && file.status==="success"){
-          return this.$confirm(`确定移除 ${file.name}？`);
+      if (file && file.status === "success") {
+        return this.$confirm(`确定移除 ${file.name}？`);
       }
     },
 
@@ -1128,18 +1191,16 @@ export default {
       const isLt2M = file.size / 1024 / 1024 < 10;
       if (!extension && !extension2 && !extension3 && !extension4) {
         this.$message({
-						message: '上传文件只能是 xls、xlsx、doc、docx格式!',
-            type: 'warning',
-            duration:"9000"
-					});
-
+          message: "上传文件只能是 xls、xlsx、doc、docx格式!",
+          type: "warning",
+          duration: "9000"
+        });
       }
       if (!isLt2M) {
-          this.$message({
-						message: '上传文件大小不能超过 10MB!',
-						type: 'warning'
-					});
-
+        this.$message({
+          message: "上传文件大小不能超过 10MB!",
+          type: "warning"
+        });
       }
       return extension || extension2 || extension3 || (extension4 && isLt2M);
     },
@@ -1165,19 +1226,16 @@ export default {
       }
     },
     handleClose(tag) {
-    
       this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
-        this.space.aroundSetTag = this.dynamicTags.join(",");
-      
-        this.space.spaceId = JSON.parse(
-          sessionStorage.getItem("space", "spaceId")
-        ).spaceId;
-        spaceUpdate(this.space).then(res => {
-          if (res.code === 200) {
-          }
-        });
-     
+      this.space.aroundSetTag = this.dynamicTags.join(",");
 
+      this.space.spaceId = JSON.parse(
+        sessionStorage.getItem("space", "spaceId")
+      ).spaceId;
+      spaceUpdate(this.space).then(res => {
+        if (res.code === 200) {
+        }
+      });
     },
 
     showInput() {
@@ -1189,11 +1247,11 @@ export default {
 
     handleInputConfirm() {
       let inputValue = this.inputValue;
-   
+
       if (inputValue) {
         this.dynamicTags.push(inputValue);
         this.space.aroundSetTag = this.dynamicTags.join(",");
-      
+
         this.space.spaceId = JSON.parse(
           sessionStorage.getItem("space", "spaceId")
         ).spaceId;
@@ -1203,16 +1261,13 @@ export default {
         });
       }
       this.inputVisible = false;
-        this.inputValue = '';
+      this.inputValue = "";
     },
     changeSelect() {
-      
-      this.resData.fieldName = this.tabSelect
-     
+      this.resData.fieldName = this.tabSelect;
     },
     // 日历
     handleSelectionChange(e) {
-
       this.roomData = e;
     },
     // 创建房源
@@ -1222,13 +1277,13 @@ export default {
           buildingId: this.buildingId,
           companyId: this.companyId,
           spaceId: this.spaceId
+          
         };
         this.$router.push({ name: "SpaceCreate", query: params });
       }
     },
     // 子组件互动值
     handleFunSpace(e) {
-    
       this.spaceId = e;
 
       this.getMainSpace();
@@ -1241,32 +1296,29 @@ export default {
 
       spaceMyspace(params).then(res => {
         if (res.code === 200) {
+           this.bus.$emit('openMenu',res.data.companyId)
+
+          if (JSON.parse(sessionStorage.getItem("space", "spaceId"))) {
+            this.form.spaceId = JSON.parse(
+              sessionStorage.getItem("space", "spaceId")
+            ).spaceId;
+
+            this.fileData.recordId = JSON.parse(
+              sessionStorage.getItem("space", "spaceId")
+            ).spaceId;
+
+            console.log(this.fileData.recordId);
+
+            this.resData.recordId = JSON.parse(
+              sessionStorage.getItem("space", "spaceId")
+            ).spaceId;
+
+            this.videoData.recordId = JSON.parse(
+              sessionStorage.getItem("space", "spaceId")
+            ).spaceId;
+          }
+
           console.log(res);
-
-
-          if(JSON.parse( sessionStorage.getItem("space", "spaceId"))){
-  this.form.spaceId = JSON.parse(
-      sessionStorage.getItem("space", "spaceId")
-    ).spaceId;
-
-    this.fileData.recordId = JSON.parse(
-      sessionStorage.getItem("space", "spaceId")
-    ).spaceId;
-
-    console.log(this.fileData.recordId)
-
-    this.resData.recordId = JSON.parse(
-      sessionStorage.getItem("space", "spaceId")
-    ).spaceId;
-
-    
-
-    this.videoData.recordId = JSON.parse(
-      sessionStorage.getItem("space", "spaceId")
-    ).spaceId;
-    }
-    
-    console.log(res)
           this.space.introduction = res.data.introduction;
           this.space.aroundSet = res.data.aroundSet;
           this.space.floorArea = res.data.floorArea;
@@ -1281,42 +1333,39 @@ export default {
           this.fileList = res.data.filesList;
           this.filePicList = res.data.imageslist;
           this.videoList = res.data.vediosList;
-          this.space.createTime  = res.data.createTime
-          
+          this.space.createTime = res.data.createTime;
+
           this.dynamicTags = res.data.aroundSetTag.split(",");
-          console.log(this.dynamicTags)
-           if(this.dynamicTags[0]===''){
-             this.dynamicTags[0]='便利'
-             
-           }else{
-              this.dynamicTags = res.data.aroundSetTag.split(",");
-           }
-          this.district = res.data.district
-          this.businessDistrict = res.data.businessDistrict
-          this.space.addressDetail = res.data.addressDetail
-          this.subways = res.data.building.subways
-          
-
-
-        spaceSaleTime(params)
-        .then(res => {
-   
-          if (res.code === 200) {
-            this.spaceInfo.company.createTime = res.data
-            console.log(this.spaceInfo.company.createTime)
-
-            this.getRoomResources();
+          console.log(this.dynamicTags);
+          if (this.dynamicTags[0] === "") {
+            this.dynamicTags[0] = "便利";
+          } else {
+            this.dynamicTags = res.data.aroundSetTag.split(",");
           }
-        })
-       
+          this.district = res.data.district;
+          this.businessDistrict = res.data.businessDistrict;
+          this.space.addressDetail = res.data.addressDetail;
+          this.subways = res.data.subways;
+
+          spaceSaleTime(params).then(res => {
+            if (res.code === 200) {
+              this.space.createTime = res.data;
+              // console.log(this.spaceInfo.company.createTime)
+
+              // this.getRoomResources();
+            }
+          });
         }
       });
       mainspace(params).then(res => {
         if (res.code === 200) {
           this.spaceInfo = res.data;
-          console.log(this.spaceInfo)
+          console.log(this.spaceInfo);
           this.buildingId = res.data.buildingId;
           this.companyId = res.data.company.companyId;
+          
+        
+
           setTimeout(() => {
             this.getCompanyTeam();
             this.getCompanyTeamLeader();
@@ -1331,7 +1380,7 @@ export default {
       params.spaceId = this.spaceId;
       roomResources(params).then(res => {
         if (res.code === 200) {
-          console.log(this.tableData)
+          console.log(this.tableData);
           this.tableData = res.data.rows;
           this.tableDataTotal = res.data.total;
         }
@@ -1352,7 +1401,7 @@ export default {
       };
       companyTeam(params).then(res => {
         if (res.code === 200) {
-          console.log(res)
+          console.log(res);
           this.team = res.data;
         }
       });
@@ -1373,9 +1422,7 @@ export default {
       }
     },
     //设置封面
-    setSurfaceImages() {
-     
-    },
+    setSurfaceImages() {},
     getCompanyTeamLeader() {
       const params = {
         companyId: this.companyId
@@ -1384,13 +1431,12 @@ export default {
         if (res.code === 200) {
           // console.log(res)
           this.teamLeader = res.data;
-          console.log(this.teamLeader)
+          console.log(this.teamLeader);
         }
       });
     },
     // 删除招商团队负责人
     handleDelTeamLeader(data) {
-     
       const params = {
         userId: data.userId,
         customerCharge: 0,
@@ -1407,19 +1453,63 @@ export default {
     // 设置招商团队弹窗
     handleSetCompanyTeam() {
       this.dialogSetCompanyTeam = true;
-      const params = {
-        companyId: this.companyId
-      };
-      customerList(params).then(res => {
+    },
+   //设置招商负责人弹窗
+    handleSetCompanyTeamLeader(){
+       this.dialogSetCompanyTeamLeader = true;
+    },
+  //确实设置
+    handeldCompanyTeamSubmit(formName){
+       this.dialogSetCompanyTeam = false;
+       this.charForm.companyId = this.companyId
+     
+      addCustomer(this.charForm).then(res => {
         if (res.code === 200) {
-          this.companyTeam = res.data;
-        } else {
-          this.companyTeam = this.team;
+        //   this.companyTeam = res.data;
+        // } else {
+        //   this.companyTeam = this.team;
+ this.$refs.ruleForm.resetFields()
+        this.getCompanyTeam()
         }
       });
+
+  
+      
+     
+      
+      
+
     },
+
+    handeldCompanyTeamLeaderSubmit(){
+       this.dialogSetCompanyTeamLeader = false;
+       this.charForm.companyId = this.companyId
+
+      addChargerLeader(this.charForm).then(res => {
+        if (res.code === 200) {
+         this.$refs.ruleForm.resetFields()
+        this.getCompanyTeamLeader()
+        }
+      });
+
+      
+      
+      
+    },
+
     dialogSetCompanyTeamClose() {
-      this.dialogSetCompanyTeam = false;
+        this.dialogSetCompanyTeam = false;
+      this.$refs['formName'].resetFields()
+
+       this.$refs.ruleForm.resetFields()
+     
+
+    },
+
+    dialogSetCompanyTeamLeaderClose(){
+      this.dialogSetCompanyTeamLeader = false;
+       this.$refs.ruleForm.resetFields()
+   
     },
     // 更新销控
     handleResetSalesTime() {
@@ -1427,14 +1517,13 @@ export default {
         spaceId: this.spaceId
       };
       this.resetSalesTimeLoading = true;
-      spaceSaleTime(params)
+      resetSalesTime(params)
         .then(res => {
           this.resetSalesTimeLoading = false;
           if (res.code === 200) {
-            this.space.createTime = res.data
-            console.log(  this.spaceInfo.company.createTime)
+            this.space.createTime = res.data;
+            console.log(this.spaceInfo.company.createTime);
             this.$message.success("更新成功！");
-            this.
             this.getRoomResources();
           }
         })
@@ -1442,9 +1531,7 @@ export default {
           this.resetSalesTimeLoading = false;
         });
     },
-    handelBox() {
- 
-    },
+    handelBox() {},
     // 删除
     handleRoomResourcesDelete() {
       const params = {
@@ -1454,13 +1541,13 @@ export default {
         this.$message.error("请选择房源！");
         return;
       }
-    
+
       for (const item of this.roomData) {
         params.delIds += item.roomId + ",";
       }
-    
+
       params.delIds = params.delIds.substring(0, params.delIds.length - 1);
-  
+
       roomResourcesBatchDelete(params).then(res => {
         if (res.code === 200) {
           this.$message.success("删除成功！");
@@ -1488,8 +1575,7 @@ export default {
     },
     //修改资料简介
     handleChangeEditorSubmit() {
-     this.tetxShow = true
-     
+      this.tetxShow = true;
 
       this.space.spaceId = JSON.parse(
         sessionStorage.getItem("space", "spaceId")
@@ -1497,16 +1583,12 @@ export default {
 
       spaceUpdate(this.space).then(res => {
         if (res.code === 200) {
-         
-		           
-	   	
         }
       });
 
       this.changeEditor = false;
     },
     handleChangeSelectSubmit() {
-     
       this.ChangePic = false;
     },
     //修改基础信息
@@ -1517,7 +1599,6 @@ export default {
 
       spaceUpdate(this.space).then(res => {
         if (res.code === 200) {
-        
         }
       });
 
@@ -1531,7 +1612,6 @@ export default {
 
       spaceUpdate(this.space).then(res => {
         if (res.code === 200) {
-         
         }
       });
 
@@ -1547,25 +1627,20 @@ export default {
         this.changeShow = false;
         this.changeShow2 = true;
 
-     spaceImagesList(this.form).then(res => {
-        if (res.code === 200) {
-         
-          this.imageslist = res.data.imageslist;
-       
-        }
-      });
-
+        spaceImagesList(this.form).then(res => {
+          if (res.code === 200) {
+            this.imageslist = res.data.imageslist;
+          }
+        });
       }
       // this.getData()
     },
 
     handlePicRemove(file, fileList) {
       //移除图片
- 
     },
     handlePictureCardPreview(file, res) {
       //预览图片时调用
-
 
       this.dialogImageUrl = file.response.data.src;
       this.dialogVisible = true;
@@ -1573,7 +1648,7 @@ export default {
 
     beforeAvatarImgUpload(file, res) {
       //文件上传之前调用做一些拦截限制
-     
+
       const isJPG = true;
       // const isJPG = file.type === 'image/jpeg';
       const isLt2M = file.size / 1024 / 1024 < 2;
@@ -1587,33 +1662,24 @@ export default {
       return isJPG && isLt2M;
     },
     handleAvatarImgSuccess(res, file, fileList) {
-  
-        
-          spaceImagesList(this.form).then(res => {
+      spaceImagesList(this.form).then(res => {
         if (res.code === 200) {
-
-           this.imageslist = res.data.imageslist;
+          this.imageslist = res.data.imageslist;
           this.locationImagesList = res.data.locationImagesList;
           this.effectImagesList = res.data.effectImagesList;
           this.floorImagesList = res.data.floorImagesList;
           this.indoorImagesList = res.data.indoorImagesList;
           this.supportingImagesList = res.data.supportingImagesList;
-         
-     
-       
         }
       });
-
-      
     },
     handlePicExceed(files, fileList) {
       //图片上传超过数量限制
       this.$message.error("上传图片不能超过6张!");
-   
     },
     imgUploadError(err, file, fileList) {
       //图片上传失败调用
-    
+
       this.$message.error("上传图片失败!");
     },
     // 路由
@@ -1632,15 +1698,18 @@ export default {
     },
 
     handleChangeMapSubmit() {
-          this.mapChange = false;
+      this.mapChange = false;
+      this.space.subways = this.subways
+      console.log("Sss")
       this.space.spaceId = JSON.parse(
         sessionStorage.getItem("space", "spaceId")
       ).spaceId;
       spaceUpdate(this.space).then(res => {
         if (res.code === 200) {
+
+
         }
       });
-
     },
 
     //显示遮罩
@@ -1651,15 +1720,12 @@ export default {
     handleMouseout() {
       this.hoverShow = false;
       this.current = null;
-      
     },
     //设置封页
     handelSetSurfaceImages(affixId) {
       this.form.affixId = affixId;
 
-      spaceSetSurfaceImages(this.form).then(res => {
-     
-      });
+      spaceSetSurfaceImages(this.form).then(res => {});
     },
     //删除图片
     handelDeleteImages(affixId, fieldName) {
@@ -1669,7 +1735,6 @@ export default {
       spaceDeleteImages(this.form).then(res => {
         spaceImagesList(this.form).then(res => {
           if (res.code === 200) {
-           
             this.imageslist = res.data.imageslist;
             this.locationImagesList = res.data.locationImagesList;
             this.effectImagesList = res.data.effectImagesList;
@@ -1732,7 +1797,7 @@ export default {
         });
         var search = ["地铁"];
         local.searchNearby(search, point, 1000);
-        console.log(local)
+        console.log(local);
         setTimeout(() => {
           map.clearOverlays();
           var marker = new window.BMap.Marker(point);
@@ -1740,24 +1805,21 @@ export default {
         }, 4000);
       });
       localSearch.search(this.mapAddress);
-      // console.log(localSearch)
+      console.log(localSearch)
     }
   },
   mounted() {
     if (this.mapAddress) {
       this.loadScript();
     }
-
   },
-
 
   //地图
   computed: {
     mapAddress() {
       // console.log(this.space.addressDetail)
-      return  this.space.addressDetail;
-    },
-
+      return this.space.addressDetail;
+    }
   },
   watch: {
     mapAddress() {
@@ -1790,6 +1852,31 @@ export default {
   background: #9881fa;
 }
 .bg8 {
+  background: #20bbe6;
+}
+
+.bg9 {
+  background: #7fbfff;
+}
+.bg10 {
+  background: #ff9e86;
+}
+.bg11 {
+  background: #ffde81;
+}
+.bg12 {
+  background: #7fecb5;
+}
+.bg13 {
+  background: #eb8775;
+}
+.bg14 {
+  background: #e887f5;
+}
+.bg15 {
+  background: #9881fa;
+}
+.bg16 {
   background: #20bbe6;
 }
 .space {

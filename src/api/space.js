@@ -121,7 +121,7 @@ export function  companyMycompany() {
 }
 
 
-//核销时间
+//获取时间
 export function  spaceSaleTime(data) {
   const params = qs.stringify(data)
   return requestCustom({
@@ -133,14 +133,88 @@ export function  spaceSaleTime(data) {
 
 
 
+//更新时间
+export function  resetSalesTime(data) {
+  const params = qs.stringify(data)
+  return requestCustom({
+    url: `/roomResources/resetSalesTime`,
+    method: 'post',
+    params: data
+  })
+}
 
-// export function  spaceSaleTime(data) {
-//   const params = qs.stringify(data)
-//   return requestCustom({
-//     url: `/roomResources/resetSalesTime`,
-//     method: 'post',
-//     params: data
-//   })
-// }
+
+//设置招商负责人
+
+export function  addChargerLeader(data) {
+  const params = qs.stringify(data)
+  return requestCustom({
+    url: `/space/addCustomerCharger`,
+    method: 'post',
+    params: data
+  })
+}
 
 
+
+//设置招商团队
+
+export function  addCustomer(data) {
+  const params = qs.stringify(data)
+  return requestCustom({
+    url: `/space/addCustomer`,
+    method: 'post',
+    params: data
+  })
+}
+
+
+//修改个人信息
+
+
+export function  userUpdate(data) {
+  const params = qs.stringify(data)
+  return requestCustom({
+    url: `/space/userUpdate`,
+    method: 'post',
+    params: data
+  })
+}
+
+
+
+//人员信息
+
+export function  spaceCustomerInfo() {
+  return requestCustom({
+    url: `/space/customerInfo`,
+    method: 'get',
+   
+  })
+}
+
+
+//企业信息
+
+
+
+export function  spaceMycompany() {
+  return requestCustom({
+    url: `/company/mycompany`,
+    method: 'get',
+   
+  })
+}
+
+//修改企业信息
+
+
+export function  spaceCompanyUpdate(data) {
+  const params = qs.stringify(data)
+  return requestCustom({
+    url: `/space/companyUpdate`,
+    method: 'post',
+    params:data
+   
+  })
+}

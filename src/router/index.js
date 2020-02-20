@@ -96,6 +96,38 @@ export const constantRoutes = [
     ]
   },
 
+
+  {
+    path: '/setting',
+    component: Layout,
+    meta: { title: '空间管理', name: '空间管理',  },
+    children: [
+      {
+        path: 'index',
+        name: 'setting',
+        component: () => import('@/views/setting/index'),
+        meta: { title: '企业信息', name: '企业信息',  }
+      }
+    ]
+  },
+
+
+
+
+  {
+    path: '/person',
+    component: Layout,
+    meta: { title: '空间管理', name: '空间管理',  },
+    children: [
+      {
+        path: 'index',
+        name: 'person',
+        component: () => import('@/views/person/index'),
+        meta: { title: '个人信息', name: '个人信息',  }
+      }
+    ]
+  },
+
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]

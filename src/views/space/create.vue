@@ -42,11 +42,6 @@
               <p class="showMessage" v-if="this.show">请输入房间号(例:701室)</p>
             </el-form-item>
           </el-col>
-          <!-- <el-col :span="7" class="col2">
-            <span>{{form.roomGallery}}</span>
-            <span>{{form.roomLayer}}</span>
-            <span>{{form.roomNumber}}</span>
-          </el-col>-->
         </el-row>
 
         <el-form-item label="房屋用途" prop="roomPurpose">
@@ -107,17 +102,15 @@
         </el-collapse-transition>
 
         <el-form-item label="是否可分割">
-          <el-col :span="2">
+          <el-col>
             <el-form-item>
+              <el-col>
               <el-radio-group v-model="form.separable">
                 <el-radio label="1" :disabled="showChanges">可分割</el-radio>
-              </el-radio-group>&nbsp;&nbsp;
-            </el-form-item>
-          </el-col>
-
-          <el-col :span="3" class="tip1">
-            <el-form-item>
-              <el-select
+              </el-radio-group> &nbsp;&nbsp;
+              
+              
+               <el-select
                 v-if="form.separable === '1' && form.workstationType==='办公室'"
                 v-model="form.divisionType"
                 style="width: 135px;"
@@ -125,10 +118,13 @@
                 <el-option label="定向分割" value="定向分割" />
                 <el-option label="自由分割" value="自由分割" />
               </el-select>
+               </el-col>
             </el-form-item>
-          </el-col>
-          <span v-if="form.separable === '1' && form.divisionType === '自由分割' ">
-            <el-col :span="3" class="tip1">
+        
+
+         
+          &nbsp;&nbsp;<span v-if="form.separable === '1' && form.divisionType === '自由分割' ">
+            <el-col  >
               <el-form-item prop="mixCutpart">
                 <el-input v-model="form.mixCutpart" style="width: 110px;" placeholder="最小分割面积" />
                 <span class="tip">平米起分</span>
@@ -136,7 +132,7 @@
             </el-col>
           </span>
           <span v-if="form.separable === '1' && form.divisionType === '定向分割'">
-            <el-col :span="9" class="tip1">
+            <el-col >
               <el-form-item prop="divisionDetail">
                 <el-input v-model="form.divisionDetail" style="width: 175px;" placeholder="分割面积" />
                 <span class="tip" v-if="form.separable">
@@ -145,6 +141,7 @@
               </el-form-item>
             </el-col>
           </span>
+          </el-col>
         </el-form-item>
 
         <el-col class="separable">
@@ -186,14 +183,12 @@
           </el-radio-group>
         </el-form-item>
 
-        <el-row>
-          <el-col :span="2">
+       
+           
             <el-form-item label="租金">
+               <el-col>
               <el-input v-model="form.rentValue" style="width: 135px;" placeholder></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="3.1" class="box">
-            <el-form-item>
+         &nbsp;&nbsp;
               <el-select v-model="form.rentUnit" style="width: 135px; margin-right: 30px;" v-if="this.form.workstationType ==='办公室'">
                 <el-option label="元/平方米·天" value="元/平方米·天"></el-option>
                 <el-option label="元/平方米·月" value="元/平方米·月"></el-option>
@@ -211,16 +206,18 @@
               <el-select v-model="form.rentUnit" style="width: 135px; margin-right: 30px;" v-if="this.form.workstationType ==='独立空间'" >
                 <el-option label="元/间·月" value="元/间·月"></el-option>
               </el-select>
-            </el-form-item>
-          </el-col>
 
-          <el-col :span="2">
-            <el-checkbox-group v-model="form.rentProperties" class="checkBox">
-              <el-checkbox label="含税">含税</el-checkbox>
-              <el-checkbox label="含物业">含物业</el-checkbox>
-            </el-checkbox-group>
-          </el-col>
-        </el-row>
+                <el-checkbox-group v-model="form.rentProperties" class="checkBox">
+                  <el-checkbox label="含税">含税</el-checkbox>
+                  <el-checkbox label="含物业">含物业</el-checkbox>
+                </el-checkbox-group>
+
+              </el-col>
+            </el-form-item>
+          
+        
+        
+      
 
         <el-form-item label="付款方式">
           <span class="tip">押</span>
@@ -553,7 +550,25 @@ export default {
         this.showChanges = true;
 
      
-      } else if (this.form.workstationType === "办公室") {
+      } 
+
+       else if (this.form.workstationType === "开放工位") {
+        this.form.separable = "0";
+        this.showChanges = true;
+
+     
+      } 
+      
+
+      else  if (this.form.workstationType === "移动工位") {
+        this.form.separable = "0";
+        this.showChanges = true;
+
+     
+      } 
+      
+      
+      else if (this.form.workstationType === "办公室") {
         this.showChanges = false;
        
       } 
@@ -663,10 +678,25 @@ export default {
     padding-right: 20px;
     color: #999;
   }
+
+  // /deep/ .el-form-item__content{
+  //   display: fl
+  // }
   .col1 {
     margin-left: -90px;
   }
+  
+  /deep/  .el-col-24{
+    display: flex;
 
+    
+  }
+
+   /deep/  .el-col-24 .el-radio-group{
+  
+     margin-top: 9px;
+    
+  }
   .col2 {
     margin-left: 10px;
     margin-top: 10px;
@@ -694,6 +724,6 @@ export default {
 .checkBox {
   display: flex;
   align-items: center;
-  margin-top: 10px;
+  // margin-top: 10px;
 }
 </style>
