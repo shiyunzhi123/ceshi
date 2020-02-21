@@ -41,7 +41,12 @@
           @change="getRoomResourcesList"
         >
           <el-option label="全部空间" value />
-          <el-option v-for="item in spacesData" :label="item.buildingName" :value="item.spaceId" />
+          <el-option
+            v-for="(item,index) in spacesData"
+            :label="item.buildingName"
+            :value="item.spaceId"
+            :key="index"
+          />
         </el-select>
         <el-select
           v-model="formSearch.roomState"
@@ -62,8 +67,8 @@
         style="width: 100%"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="45" />
-        <el-table-column label="房源" >
+        <el-table-column type="selection" width="45" :selectable="checkSelectable" />
+        <el-table-column label="房源">
           <template slot-scope="scope">
             <div style="display:flex">
               <div class="imgBoxSpace fl" @click="handleEdit(scope.row.roomId)">
@@ -74,7 +79,7 @@
               <div style="margin-left:15px">
                 <a class="imgBoxSpan" @click="handleEdit(scope.row.roomId)">
                   {{ scope.row.building.buildingName }}
-                  <svg-icon icon-class="edit" />
+                  
                 </a>
                 <div>{{ scope.row.roomGallery }}{{ scope.row.roomLayer }}{{ scope.row.roomNumber }}</div>
               </div>
@@ -178,7 +183,7 @@ import {
   roomActivitiesAdd,
   roomActivitiesCancle
 } from "@/api/activity";
-import { roomCommissionAdd } from '../../api/commission';
+import { roomCommissionAdd } from "../../api/commission";
 export default {
   name: "AttractCreate",
   data() {
@@ -192,7 +197,7 @@ export default {
         endTime: "",
         roomStatus: 1,
         roomIds: "",
-        roomId:'',
+        roomId: ""
       },
       formSearch: {
         actyId: "",
@@ -206,6 +211,7 @@ export default {
     const id = this.$route.params.id;
     this.id = this.$route.params.id;
     this.getMySpaces();
+    this.getRoomResourcesList();
 
     if (id) {
       this.modify = true;
@@ -217,8 +223,16 @@ export default {
     }
   },
   methods: {
-    //查询数据-编辑用
+      checkSelectable(row) {
+      if ( row.roomState!=='1' ) {
+        return 0;
+      } else {
+        return 1;
+      }
+    },
 
+    
+    //查询数据-编辑用
     getEditData() {
       const params = {
         id: this.id
@@ -227,7 +241,7 @@ export default {
       activityDetail(params).then(res => {
         if (res.code === 200) {
           this.form = { ...res.data };
-            this.form.roomIds = ''
+          this.form.roomIds = "";
           console.log(this.form);
         }
       });
@@ -244,8 +258,7 @@ export default {
 
     //单个使用
 
-
-      handleSetRoomStateAdd(id) {
+    handleSetRoomStateAdd(id) {
       this.form.roomId = id.roomId;
       console.log(this.form);
       roomActivitiesAdd(this.form).then(res => {
@@ -258,7 +271,7 @@ export default {
           //   }
           // });
 
-          this.getRoomResourcesList()
+          this.getRoomResourcesList();
         }
       });
     },
@@ -277,13 +290,14 @@ export default {
           //   }
           // });
 
-          this.getRoomResourcesList()
+          this.getRoomResourcesList();
         }
       });
     },
     // 房源
     getRoomResourcesList() {
       this.formSearch.actyId = this.form.actyId;
+
       activityRoomList(this.formSearch).then(res => {
         if (res.code === 200) {
           this.tableData = res.data;
@@ -311,7 +325,7 @@ export default {
       if (this.id) {
         // 修改
 
-        console.log(this.form)
+        console.log(this.form);
         activityUpdata(this.form).then(res => {
           if (res.code === 200) {
             this.$message.success("修改成功！");

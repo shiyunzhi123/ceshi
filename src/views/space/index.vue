@@ -617,7 +617,7 @@
                   </el-form-item>
 
 
-                  <el-form-item label="距离" width="50px">
+                  <el-form-item label="地铁" width="50px">
                     <el-input style="width:250px;" v-model="subways"></el-input>
                   </el-form-item>
                 </el-form>
@@ -1320,6 +1320,10 @@ export default {
 
           console.log(res);
           this.space.introduction = res.data.introduction;
+
+          if(this.space.introduction !==''){
+            this.tetxShow =  true
+          }
           this.space.aroundSet = res.data.aroundSet;
           this.space.floorArea = res.data.floorArea;
           this.space.propertyCompany = res.data.propertyCompany;

@@ -4,7 +4,7 @@
     <div class="continer">
       <el-form label-width="95px" :model="form" :rules="rules" ref="form" size="small">
         <el-form-item label="所在楼盘" prop="buildingName">
-          {{ form.building.buildingName }}
+          {{ form.buildingName }}
           <!-- <el-select v-model="form.building.buildingName" filterable>
             <el-option v-for="item in buildingList" :key="item.id" :label="item.buildingName" :value="item.buildingName" />
           </el-select>-->
