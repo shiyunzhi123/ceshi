@@ -4,7 +4,7 @@
     <div class="continer">
       <el-form label-width="95px" :model="form" :rules="rules" ref="form" size="small">
         <el-form-item label="所在楼盘" prop="buildingName">
-          {{ form.buildingName }}
+          {{ this.form.buildingName }}
           <!-- <el-select v-model="form.building.buildingName" filterable>
             <el-option v-for="item in buildingList" :key="item.id" :label="item.buildingName" :value="item.buildingName" />
           </el-select>-->
@@ -145,7 +145,7 @@
         </el-form-item>
 
         <el-col class="separable">
-          <el-form-item prop="separable">
+          <el-form-item prop="separable" style="width: 185px;">
             <el-radio-group v-model="form.separable">
               <el-radio label="0" :disabled="showChange">不可分割</el-radio>
             </el-radio-group>
@@ -185,7 +185,7 @@
 
        
            
-            <el-form-item label="租金">
+            <el-form-item label="租金" prop="rentValue">
                <el-col>
               <el-input v-model="form.rentValue" style="width: 135px;" placeholder></el-input>
          &nbsp;&nbsp;
@@ -214,10 +214,6 @@
 
               </el-col>
             </el-form-item>
-          
-        
-        
-      
 
         <el-form-item label="付款方式">
           <span class="tip">押</span>
@@ -236,7 +232,7 @@
         <el-form-item label="上传图片">
           <el-upload
             v-model="form.images"
-            action="http://39.107.15.114:8080/upload/roomImage"
+            action="http://39.107.15.114:12080/upload/roomImage"
             list-type="picture-card"
             accept="image/*"
             :headers="headers"
@@ -282,6 +278,18 @@ import {
 export default {
   name: "SpaceCreate",
   data() {
+  //    var vaidatarentValue = (rule, value, callback) => {
+  //      var ret=/^(([1-9][0-9]*)|(([0]\.\d{1,2}|[1-9][0-9]*\.\d{1,1})))$/;
+  //      if(value ==="" ){
+  //        callback(new Error("请输入租金"))
+  //      }else if(!ret.test(this.form.rentValue) && this.form.rentUnit ==='元/平方米·月'){
+  //         callback(new Error("只能输入整数!"));
+  //      }else{
+  //       callback();
+  //      }
+  //    }
+
+
     return {
       dialogVisible: false,
       dialogImageUrl: "",
@@ -334,29 +342,7 @@ export default {
         }
       },
       rules: {
-        // roomNumber: [
-        //   {
-        //     required: false, //是否必填
-        //     message: "请输入房间号(例:701室)", //规则
-        //     trigger: "blur" //何事件触发
-        //   }
-        // ],
-        // roomGallery: [
-        //   {
-        //     required: false, //是否必填
-        //     message: "请输入楼座号(例:18栋)", //规则
-        //     trigger: "blur" //何事件触发
-        //   }
-        //   //可以设置双重验证标准
-        // ],
-        // roomLayer: [
-        //   {
-        //     required: false, //是否必填
-        //     message: "请输入楼层(例:7层)", //规则
-        //     trigger: "blur" //何事件触发
-        //   }
-        //   //可以设置双重验证标准
-        // ],
+      
         roomPurpose: [
           {
             required: true, //是否必填
@@ -401,7 +387,9 @@ export default {
           {
             validator: this.checkMix
           }
-        ]
+        ],
+        // rentValue: [{ validator:vaidatarentValue , trigger: "blur" }]
+
       }
     };
   },
@@ -422,7 +410,7 @@ export default {
     let p = sessionStorage.getItem("space");
     if (p) {
       p = JSON.parse(p);
-      this.form.building.buildingName = p.buildingName;
+      this.form.buildingName = p.buildingName;
     }
     this.checkCookie("Authorization");
   },

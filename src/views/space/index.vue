@@ -170,13 +170,16 @@
                     <div>{{ scope.row.roomArea}}㎡</div>
                     <div>{{ scope.row.workstationType }}</div>
                   </div>
-                  <div v-if="scope.row.workstationType==='开放工位'">
+                  <div v-if="scope.row.workstationType==='开放工位'">       
+                     <div>{{ scope.row.personPerRoom  }}个</div>
                     <div>{{ scope.row.workstationType }}</div>
-                    <div>{{ scope.row.workstation_number }}</div>
+ 
                   </div>
 
                   <div v-if="scope.row.workstationType==='移动工位'">
+                     <div>{{ scope.row.workstationNumber  }}个</div>
                     <div>{{ scope.row.workstationType }}</div>
+                   
                   </div>
 
                   <div v-if="scope.row.workstationType==='独立空间'">
@@ -368,7 +371,7 @@
               <div class="briefIntroduction">
                 <el-upload
                   class="upload-demo"
-                  action="http://39.107.15.114:8080/upload/spaceFile"
+                  action="http://39.107.15.114:12080/upload/spaceFile"
                   :on-preview="handlePreview"
                   :data="fileData"
                   :on-success="handleFileSuccess"
@@ -384,7 +387,7 @@
                   <div class="uploadFile">
                     <el-button type="primary" size="mini">
                       上传
-                      <i class="el-icon-upload el-icon--right"></i>
+                      <!-- <i class="el-icon-upload el-icon--right"></i> -->
                     </el-button>
                   </div>
                 </el-upload>
@@ -398,7 +401,7 @@
               <div class="briefIntroduction">
                 <el-upload
                   class="upload-demo"
-                  action="http://39.107.15.114:8080/upload/spaceVideo"
+                  action="http://39.107.15.114:12080/upload/spaceVideo"
                   :on-preview="handleVideoPreview"
                   :data="videoData"
                   :on-success="handleVideoFileSuccess"
@@ -414,7 +417,7 @@
                   <div class="uploadFile">
                     <el-button type="primary" size="mini">
                       上传
-                      <i class="el-icon-upload el-icon--right"></i>
+                      <!-- <i class="el-icon-upload el-icon--right"></i> -->
                     </el-button>
                   </div>
                 </el-upload>
@@ -536,13 +539,13 @@
                 <div class="addressBox clearfix">
                   <div class="addressList fl">
                     <p>
-                      <em class="icon em1"></em>
+                     <i class="el-icon-location-outline"></i>
                       <i>[{{this.district}}-{{this.businessDistrict}}]</i>
                       {{this.space.addressDetail}}
                     </p>
-                    <p>
-                      <em class="icon em2"></em>
-                      距离 {{this.subways}}
+                    <p style="width:320px ">         
+                     地铁
+                     <span style="width:200px ">{{this.subways}}</span>
                     </p>
                   </div>
                 </div>
@@ -815,7 +818,7 @@
                     <el-upload
                       ref="upload"
                       class="avatar-uploader"
-                      action="http://39.107.15.114:8080/upload/spaceImage"
+                      action="http://39.107.15.114:12080/upload/spaceImage"
                       list-type="picture-card"
                       accept="image/*"
                       :headers="headers"
@@ -1321,7 +1324,7 @@ export default {
           console.log(res);
           this.space.introduction = res.data.introduction;
 
-          if(this.space.introduction !==''){
+          if(this.space.introduction){
             this.tetxShow =  true
           }
           this.space.aroundSet = res.data.aroundSet;
@@ -1630,6 +1633,9 @@ export default {
       } else {
         this.changeShow = false;
         this.changeShow2 = true;
+          if (this.mapAddress) {
+      this.loadScript();
+    }
 
         spaceImagesList(this.form).then(res => {
           if (res.code === 200) {
@@ -1794,12 +1800,12 @@ export default {
           renderOptions: { map: map, panel: "r-result" },
           onSearchComplete(e) {
             that.subwayCount = e[0].YA;
-            // that.fastCount = e[1].YA;
-            // that.bankCount = e[2].YA;
-            // that.hotelCount = e[3].YA;
+            that.fastCount = e[1].YA;
+            that.bankCount = e[2].YA;
+            that.hotelCount = e[3].YA;
           }
         });
-        var search = ["地铁"];
+       var search = ['地铁', '餐厅', '银行', '酒店']
         local.searchNearby(search, point, 1000);
         console.log(local);
         setTimeout(() => {
@@ -1812,17 +1818,18 @@ export default {
       console.log(localSearch)
     }
   },
-  mounted() {
-    if (this.mapAddress) {
-      this.loadScript();
-    }
-  },
+  // mounted() {
+  
+  // },
 
   //地图
   computed: {
     mapAddress() {
-      // console.log(this.space.addressDetail)
-      return this.space.addressDetail;
+      const addressDetail  =  this.space.addressDetail
+      if(addressDetail ){
+          return addressDetail
+      }
+    
     }
   },
   watch: {
@@ -1831,6 +1838,10 @@ export default {
     }
   }
 };
+
+
+
+
 </script>
 
 <style lang="scss" scoped>
@@ -2450,8 +2461,8 @@ export default {
 
 #map-box {
   // margin-top: 20px;
-  width: 450px;
-  height: 300px;
+  width: 550px;
+  height: 350px;
   background: #eee;
   // float: right;
   margin-right: 100px;

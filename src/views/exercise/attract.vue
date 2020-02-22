@@ -167,7 +167,7 @@ export default {
 
  // 作废
     handleCommissionZf() {
-       this.$confirm('确定删除选中佣金吗?', '', {
+       this.$confirm('确定删除选中活动吗?', '', {
         confirmButtonText: '确定作废',
         cancelButtonText: '取消',
         type: 'warning'

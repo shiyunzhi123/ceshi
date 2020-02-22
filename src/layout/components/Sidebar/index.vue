@@ -62,10 +62,14 @@
           <el-input style="width:80%;" v-model="charForm.mobile"></el-input>
         </el-form-item>
 
-        <el-form-item label="邮箱" prop="email"  :rules="[
+        <el-form-item
+          label="邮箱"
+          prop="email"
+          :rules="[
       {  message: '请输入邮箱地址', trigger: 'blur' },
       { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
-    ]">
+    ]"
+        >
           <el-input style="width:80%;" v-model="charForm.email"></el-input>
         </el-form-item>
 
@@ -90,6 +94,7 @@
             type="password"
             autocomplete="off"
             v-model="charForm.newPassword"
+            maxlength="18"
           ></el-input>
         </el-form-item>
 
@@ -122,22 +127,24 @@ import { userCustomerInfo } from "@/api/user";
 export default {
   components: { SidebarItem, Logo },
   data() {
-
-
     var checkphone = (rule, value, callback) => {
-		      // let phoneReg = /(^1[3|4|5|6|7|8|9]\d{9}$)|(^09\d{8}$)/;
-		      if (value == "") {
-		        callback(new Error("请输入手机号"));
-		      } else if (!this.isCellPhone(value)) {//引入methods中封装的检查手机格式的方法
-		        callback(new Error("请输入正确的手机号!"));
-		      } else {
-		        callback();
-		      }
-		    };
+      // let phoneReg = /(^1[3|4|5|6|7|8|9]\d{9}$)|(^09\d{8}$)/;
+      if (value == "") {
+        callback(new Error("请输入手机号"));
+      } else if (!this.isCellPhone(value)) {
+        //引入methods中封装的检查手机格式的方法
+        callback(new Error("请输入正确的手机号!"));
+      } else {
+        callback();
+      }
+    };
 
     var validatePass = (rule, value, callback) => {
+      var phoneTest = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,18}$/;
       if (value === "") {
         callback(new Error("请输入密码"));
+      } else if (!phoneTest.test(this.charForm.newPassword)) {
+        callback(new Error("包含数字、字母两种，且密码位数为6-16位"));
       } else {
         if (this.charForm.secondPassword !== "") {
           this.$refs.charForm.validateField("secondPassword");
@@ -173,7 +180,7 @@ export default {
       rules: {
         newPassword: [{ validator: validatePass, trigger: "blur" }],
         secondPassword: [{ validator: validatePass2, trigger: "blur" }],
-         mobile: [{ validator: checkphone, trigger: "blur" }]
+        mobile: [{ validator: checkphone, trigger: "blur" }]
       }
     };
   },
@@ -214,14 +221,13 @@ export default {
     }
   },
   methods: {
-
-    	isCellPhone(val) {
-	      if (!/^1(3|4|5|6|7|8)\d{9}$/.test(val)) {
-	        return false;
-	      } else {
-	        return true;
-	      }
-	    },
+    isCellPhone(val) {
+      if (!/^1(3|4|5|6|7|8)\d{9}$/.test(val)) {
+        return false;
+      } else {
+        return true;
+      }
+    },
 
     async logout() {
       await this.$store.dispatch("user/resetToken").then(() => {
@@ -259,7 +265,7 @@ export default {
         if (valid) {
           this.dialogPersonShow = false;
 
-          delete this.charForm.secondPassword
+          delete this.charForm.secondPassword;
 
           userUpdate(this.charForm).then(res => {
             if ((res.code = 200)) {
@@ -274,7 +280,7 @@ export default {
     },
 
     dialogPersonClose() {
-      this.dialogPersonShow  =false
+      this.dialogPersonShow = false;
     },
     setting() {
       this.$router.push("/setting/index");

@@ -81,6 +81,14 @@ export default {
         callback()
       }
     }
+
+       const validateUsername = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入用户名'))
+      } else {
+        callback()
+      }
+    }
     return {
       loginForm: {
         uuid: '',
@@ -89,7 +97,7 @@ export default {
         password: '1234qwer'
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur' }],
+        username: [{ required: true, trigger: 'blur' ,validator: validateUsername}],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
       loading: false,
@@ -263,7 +271,7 @@ $light_gray:#eee;
   }
 }
 /deep/ .el-button {margin-top: 20px;}
-/deep/ .el-form-item { border-width: 0; border-bottom-width: 1px; margin-bottom: 10px;}
+/deep/ .el-form-item { border-width: 0; border-bottom-width: 1px; margin-bottom: 16px;}
 /deep/ .el-form-item__content {font-size: 16px; background: #FFF; color: #333;}
-
+/deep/ .el-form-item__error{padding-top: 5px;}
 </style>

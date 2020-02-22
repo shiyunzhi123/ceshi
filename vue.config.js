@@ -29,6 +29,7 @@ module.exports = {
   assetsDir: 'static',
   lintOnSave: false,
   productionSourceMap: false,
+ 
   devServer: {
     port: port,
     open: true,

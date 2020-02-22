@@ -140,9 +140,9 @@
 
         <el-table-column label="活动状态" width="150">
           <template slot-scope="scope">
-            <div v-if="scope.row.activityFlag">已使用活动</div>
+            <div v-if="scope.row.activityFlag">{{scope.row.activityNames}}</div>
 
-            <div v-if="!scope.row.activityFlag">未使用活动</div>
+            <div v-if="!scope.row.activityFlag">{{scope.row.activityNames}}</div>
           </template>
         </el-table-column>
 
@@ -154,14 +154,18 @@
               plain
               size="mini"
               @click="handleSetRoomStateAdd(scope.row)"
-            >使用该佣金</el-button>
+              :disabled="checkDisabled(scope.row)"
+
+            >使用该活动</el-button>
             <el-button
               v-if="scope.row.activityFlag"
               type="success"
               plain
               size="mini"
               @click="handleSetRoomStateCanle(scope.row)"
-            >取消使用</el-button>
+              :disabled="checkDisabled2(scope.row)"
+
+            >取消改活动</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -223,8 +227,30 @@ export default {
     }
   },
   methods: {
+
+
+    
+    checkDisabled(row){
+
+       if (row.activityFlag || row.roomState!=='1' ) {
+        return true;
+      } else {
+        return false;
+      }
+
+    },
+
+    checkDisabled2(row){
+
+       if (row.activityNames ) {
+        return false;
+      } else {
+        return true;
+      }
+
+    },
       checkSelectable(row) {
-      if ( row.roomState!=='1' ) {
+      if ( row.activityFlag || row.roomState!=='1' ) {
         return 0;
       } else {
         return 1;
@@ -242,7 +268,8 @@ export default {
         if (res.code === 200) {
           this.form = { ...res.data };
           this.form.roomIds = "";
-          console.log(this.form);
+          this.formSearch.actyId = this.form.actyId
+          this.getRoomResourcesList();
         }
       });
     },

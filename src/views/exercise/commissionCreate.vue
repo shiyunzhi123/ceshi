@@ -174,9 +174,9 @@
 
         <el-table-column label="佣金状态" width="150">
           <template slot-scope="scope">
-            <div v-if="scope.row.commissionFlag">已使用佣金</div>
+            <div v-if="scope.row.commissionFlag">{{scope.row.commissionName}}</div>
 
-            <div v-if="!scope.row.commissionFlag">未使用佣金</div>
+            <div v-if="!scope.row.commissionFlag">{{scope.row.commissionName}}</div>
           </template>
         </el-table-column>
 
@@ -188,6 +188,7 @@
               plain
               size="mini"
               @click="handleSetRoomStateAdd(scope.row)"
+              :disabled="checkDisabled(scope.row)"
             >使用该佣金</el-button>
             <el-button
               v-show="scope.row.commissionFlag"
@@ -195,6 +196,7 @@
               plain
               size="mini"
               @click="handleSetRoomStateCanle(scope.row)"
+              :disabled="checkDisabled2(scope.row)"
             >取消使用</el-button>
           </template>
         </el-table-column>
@@ -237,7 +239,8 @@ export default {
       },
       formSearch: {
         spaceId: "",
-        roomState: ""
+        roomState: "",
+        cmsnId:''
       },
       tableData: []
     };
@@ -259,8 +262,8 @@ export default {
   },
   created() {
     this.getMySpaces();
-    // this.commissionRoomList();
     this.getRoomResourcesList()
+    
 
     this.id = this.$route.params.id;
 
@@ -269,9 +272,29 @@ export default {
     }
   },
   methods: {
+
+    checkDisabled(row){
+
+       if (row.commissionFlag || row.roomState!=='1' || row.commissionName ) {
+        return true;
+      } else {
+        return false;
+      }
+
+    },
+
+    checkDisabled2(row){
+
+       if (row.commissionName ) {
+        return false;
+      } else {
+        return true;
+      }
+
+    },
     //禁用状态
     checkSelectable(row) {
-      if (row.commissionName || row.roomState!=='1' ) {
+      if (row.commissionFlag || row.roomState!=='1' || row.commissionName ) {
         return 0;
       } else {
         return 1;
@@ -288,6 +311,9 @@ export default {
         if (res.code === 200) {
           this.form = { ...res.data };
           this.form.roomIds = "";
+          this.formSearch.cmsnId =    this.form.cmsnId
+          // console.log( this.formSearch.cmsnId)
+          this.getRoomResourcesList()
         }
       });
     },
@@ -303,9 +329,11 @@ export default {
     // 房源
     getRoomResourcesList() {
       this.formSearch.cmsnId = this.form.cmsnId;
+      // console.log(this.formSearch.cmsnId)
       commissionRoomList(this.formSearch).then(res => {
         if (res.code === 200) {
           this.tableData = res.data;
+          
         }
       });
     },
@@ -325,7 +353,7 @@ export default {
       console.log(id, ids);
 
       this.form.roomId = id.roomId;
-      console.log(this.form);
+      // console.log(this.form);
       roomCommissionAdd(this.form).then(res => {
         if (res.code === 200) {
           this.$message.success("更新成功");

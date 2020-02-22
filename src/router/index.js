@@ -73,7 +73,7 @@ export const constantRoutes = [
         meta: { title: '佣金政策', name: '佣金', icon: 'handle' }
       },
       {
-        path: 'commission/create',
+        path: 'commission/create:id?',
         name: 'CommissionCreate',
         hidden: true,
         component: () => import('@/views/exercise/commissionCreate'),
