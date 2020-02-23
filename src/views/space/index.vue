@@ -1554,12 +1554,17 @@ export default {
       }
 
       params.delIds = params.delIds.substring(0, params.delIds.length - 1);
-
+           this.$confirm('确定删除选中房源吗?', '', {
+        confirmButtonText: '确定删除',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
       roomResourcesBatchDelete(params).then(res => {
         if (res.code === 200) {
           this.$message.success("删除成功！");
           this.getMainSpace();
         }
+      })
       });
     },
     // 修改房源状态

@@ -42,7 +42,7 @@
           <el-form-item
             label="管理面积"
             prop="manageArea"
-            :rules="{ required: true, message: '管理面积不能为空', trigger: ['blur', 'change'] }"
+            :rules="{ required: true, trigger: ['blur', 'change'], validator:vaidatarentValue  }"
           >
             <el-input v-model="form.manageArea" style="width: 175px;" />
             平方米
@@ -86,6 +86,8 @@ export default {
     companyId: String
   },
   data() {
+
+   
     return {
       shortName:"",
       dialogCreateSpace: false,
@@ -167,6 +169,18 @@ export default {
       })
     },
     // 楼盘变化时
+
+      vaidatarentValue(rule, value, callback){
+       var ret= /^(([1-9]{1}\d*)|([0]{1}))(\.\d{1})$/
+       if(value ==="" ){
+         callback(new Error("请输入租金"))
+       }else if(!ret.test(this.form.manageArea)){
+          callback(new Error("输入到小数点一位!"));
+       }else{
+        callback();
+       }
+     },
+
     handleBuildingChange() {
       for (const item of this.buildingList) {
         if (item.buildingId === this.buildingSelected) {

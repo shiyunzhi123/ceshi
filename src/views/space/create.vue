@@ -278,16 +278,19 @@ import {
 export default {
   name: "SpaceCreate",
   data() {
-  //    var vaidatarentValue = (rule, value, callback) => {
-  //      var ret=/^(([1-9][0-9]*)|(([0]\.\d{1,2}|[1-9][0-9]*\.\d{1,1})))$/;
-  //      if(value ==="" ){
-  //        callback(new Error("请输入租金"))
-  //      }else if(!ret.test(this.form.rentValue) && this.form.rentUnit ==='元/平方米·月'){
-  //         callback(new Error("只能输入整数!"));
-  //      }else{
-  //       callback();
-  //      }
-  //    }
+     var vaidatarentValue = (rule, value, callback) => {
+       var ret= /^(([1-9]{1}\d*)|([0]{1}))(\.\d{1})$/
+       var ret2 = /^([0-9]*)$/
+       if(value ==="" ){
+         callback(new Error("请输入租金"))
+       }else if(!ret.test(this.form.rentValue) && this.form.rentUnit ==='元/平方米·月'){
+          callback(new Error("输入到小数点一位!"));
+       }else if(!ret2.test(this.form.rentValue) && this.form.rentUnit ==='元/平方米·天'){
+          callback(new Error("只能是整数!"));
+       }else{
+        callback();
+       }
+     }
 
 
     return {
@@ -388,7 +391,7 @@ export default {
             validator: this.checkMix
           }
         ],
-        // rentValue: [{ validator:vaidatarentValue , trigger: "blur" }]
+        rentValue: [{ validator:vaidatarentValue , trigger: "blur" }]
 
       }
     };

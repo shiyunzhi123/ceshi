@@ -50,7 +50,7 @@
           <el-form-item
             label="佣金值"
             prop="cmsnValue"
-            :rules="{ required: true, message: '请选择计算方式', trigger: ['blur', 'change'] }"
+            :rules="{ required: true, trigger: ['blur', 'change'],validator:vaidatarentValue  }"
           >
             <el-input v-model="form.cmsnValue" style="width: 120px;" />
             <span v-if="form.cmsnUnit === '月租金'">个月（租金）</span>
@@ -300,6 +300,18 @@ export default {
         return 1;
       }
     },
+
+     vaidatarentValue(rule, value, callback){
+       var ret= /^(([1-9]{1}\d*)|([0]{1}))(\.\d{1})$/
+       if(value ==="" ){
+         callback(new Error("请输入租金"))
+       }else if(!ret.test(this.form.cmsnValue)){
+          callback(new Error("输入到小数点一位!"));
+       }else{
+        callback();
+       }
+     },
+
 
     //查询数据-编辑用
     getEditData() {
